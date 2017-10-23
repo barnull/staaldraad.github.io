@@ -5,7 +5,7 @@ date:   2017-10-23 15:14:39
 categories: pentest phishing dde
 ---
 
-A few weeks back Saif El-Sherei and I posted on the [SensePost](https://sensepost.com/blog/2017/macro-less-code-exec-in-msword/) blog about DDE and getting command exec in MSWord without macros. This post got way more attention than we initially expected it would. Since then DDE has been used in phishing and malware campaigns, as well as legitimate red-team engagements. With the rapid rise in attacks using DDE, detection has been stepped up and most AV engines have basic DDE detection built in. Most of this detection has been based around YARA rules, which identify the **DDE** or **DDEAUTO** strings in .docx and .doc files. This got me wondering if it would be possible to obfuscate the DDE out of the document. One or two attemps at this have emerged, with threat-actors changing the case of the DDE string, and splitting it across multiple lines as described here; [Macroless DOC malware that avoids detection with Yara rule](https://furoner.wordpress.com/2017/10/17/macroless-malware-that-avoids-detection-with-yara-rule/amp/).
+A few weeks back Saif El-Sherei and I posted on the [SensePost](https://sensepost.com/blog/2017/macro-less-code-exec-in-msword/) blog about DDE and getting command exec in MSWord without macros. This post got way more attention than we initially expected it would. Since then DDE has been used in phishing and malware campaigns, as well as legitimate red-team engagements. With the rapid rise in attacks using DDE, detection has been stepped up and most AV engines have basic DDE detection built in. Most of this detection has been based around YARA rules, which identify the **DDE** or **DDEAUTO** strings in .docx and .doc files. This got me wondering if it would be possible to obfuscate the DDE out of the document. One or two attempts at this have emerged, with threat-actors changing the case of the DDE string, and splitting it across multiple lines as described here; [Macroless DOC malware that avoids detection with Yara rule](https://furoner.wordpress.com/2017/10/17/macroless-malware-that-avoids-detection-with-yara-rule/amp/).
 
 In this post I'll share my attempts at obfuscation and detection bypass. Hopefully this will be helpful for both attack and defence.
 
@@ -15,7 +15,7 @@ In this post I'll share my attempts at obfuscation and detection bypass. Hopeful
 
 # Payload Obfuscation
 
-Before digging into ways of obfuscating the **DDE** and **DDEAUTO** field codes, I decided to focus on obfuscating the payload. The reason for this being two-fold. Firstly, the payload is simply a string, rather than a reserved field code, meaning obfuscation is less likely to break the funcionality. Secondly, we have more room for obfuscation, trying to hide three characters (DDE) is much more of a challenge than obfuscating a 255 character string.
+Before digging into ways of obfuscating the **DDE** and **DDEAUTO** field codes, I decided to focus on obfuscating the payload. The reason for this being two-fold. Firstly, the payload is simply a string, rather than a reserved field code, meaning obfuscation is less likely to break the functionality. Secondly, we have more room for obfuscation, trying to hide three characters (DDE) is much more of a challenge than obfuscating a 255 character string.
 
 Seeing as we are dealing with field codes already, it felt like a good place to try and find some more obfuscation. A quick search for "*list field codes word*" lead to [this support article by Microsoft](https://support.office.com/en-us/article/List-of-field-codes-in-Word-1ad6d91a-55a7-4a8d-b535-cf7888659a51), which, helpfully, contains a list of all supported field codes. After spending some time going through the various fields, one struck me as possibly helpful. This being the **QUOTE** field, which has the described functionality of "The Quote field inserts the specified text into a document.". This sounded promising as we were looking at ways to manipulate the payload string and the QUOTE field allows for manipulation of a string and inserting it into a document. 
 
@@ -137,7 +137,7 @@ This gives us our auto executing DDE, and we bypass Oletools;
 
 ![Oletools bypass](/assets/oletools_dde_bypass.png)
 
-I've made a [Pull Request](https://github.com/decalage2/oletools/pull/205) for an update to oletools to detect DDE links embeded in **fldSimple** elements.
+I've made a [Pull Request](https://github.com/decalage2/oletools/pull/205) for an update to oletools to detect DDE links embedded in **fldSimple** elements.
 
 This also stacks up pretty well against [AV](https://www.virustotal.com/#/file/0f8bc14e32928ec882948977b25483a993fb8b4d9c8bc542aa13ecfbde785837/detection) 
 
@@ -147,9 +147,9 @@ Remember that behaviour based AV should be detecting this once the payload execu
 
 ### Side Effects
 
-There are also some side effects that creep in when using fldSimple. If you decide to go with **DDEAUTO** AND include ```w:dirty="true"```, the end user will be prompted 3 times (not sure why three and not two) if they want to excute the DDE application. This does mean you have three chances of them hitting "yes" rather than the usual one. 
+There are also some side effects that creep in when using fldSimple. If you decide to go with **DDEAUTO** AND include ```w:dirty="true"```, the end user will be prompted 3 times (not sure why three and not two) if they want to execute the DDE application. This does mean you have three chances of them hitting "yes" rather than the usual one. 
 
-Interestingly when lauching powershell using the fldSimple and ```c:\\windows\\system32\\cmd.exe /k powershell```, the powershell will be launched inside the cmd window, dropping you straight into the powershell console. This is the same behaviour you would get if you ran powershell from within an existing cmd instance. Unlike the usual DDE that spawns cmd AND powershell. And you'll receive a message of "Cannot load PSReadline module. Console is running without PSReadline" (screenshot). Maybe someone would be interested in digging into this?
+Interestingly when launching powershell using the fldSimple and ```c:\\windows\\system32\\cmd.exe /k powershell```, the powershell will be launched inside the cmd window, dropping you straight into the powershell console. This is the same behaviour you would get if you ran powershell from within an existing cmd instance. Unlike the usual DDE that spawns cmd AND powershell. And you'll receive a message of "Cannot load PSReadline module. Console is running without PSReadline" (screenshot). Maybe someone would be interested in digging into this?
 
 ![PSReadline](/assets/dde_powershell_fldsimple.png)
 
@@ -159,7 +159,7 @@ Now the ultimate win would be to have no **DDE** or **DDEAUTO** in the document 
 
 For this, we can abuse another legacy feature (aren't these great). At one point in time Word was billed as a one-stop shop for anything text related, this included creating web pages. Word was an IDE for HTML at one point, the HTML was never pretty but it worked. One of the things introduced around this time was the idea of **frames** and **framesets**. Frames allowed you to load different HTML/Text pages into frames within Word, the HTML was automatically parsed and turned into Word formated content. This functionality seems to have been removed from the UI in Word 2016 (possibly earlier as well), but the underlying parsing routines still remain. This means if you create a document with embedded frames, Word will still process them for you.
 
-To insert a frameset you need to go back to editing a clean .docx. First unzip and then open **webSettings.xml**. You then want to modify add the new XML enlement **frameset**:
+To insert a frameset you need to go back to editing a clean .docx. First unzip and then open **webSettings.xml**. You then want to modify add the new XML element **frameset**:
 ```
 <w:frameset>
     <w:framesetSplitbar>
