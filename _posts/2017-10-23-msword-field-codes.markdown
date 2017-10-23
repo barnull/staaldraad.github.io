@@ -45,7 +45,7 @@ This effectively becomes:
 
 At this point you can use your imagination and figure out that we would replace **AAAA** and **GGGG** with our relevant payloads. To make this easier, I wrote a quick python script that simply converts a given string into the equivalent QUOTE field.
 
-[str2quote.py](https://gist.github.com/staaldraad/df29bd1a840cb53ed2819c1980143166)
+{% gist staaldraad/df29bd1a840cb53ed2819c1980143166 %}
 
 To pop powershell, we can now use the following:
 
