@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Vpn Infrastructure Research on Staaldraad</title>
-    <link>https://staaaldraad.github.io/categories/vpn-infrastructure-research/</link>
+    <link>https://staaldraad.github.io/categories/vpn-infrastructure-research/</link>
     <description>Recent content in Vpn Infrastructure Research on Staaldraad</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 17 Apr 2017 13:14:39 +0000</lastBuildDate>
     
-	<atom:link href="https://staaaldraad.github.io/categories/vpn-infrastructure-research/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://staaldraad.github.io/categories/vpn-infrastructure-research/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>NAT-to-NAT VPN with WireGuard</title>
-      <link>https://staaaldraad.github.io/2017/04/17/nat-to-nat-with-wireguard/</link>
+      <link>https://staaldraad.github.io/2017/04/17/nat-to-nat-with-wireguard/</link>
       <pubDate>Mon, 17 Apr 2017 13:14:39 +0000</pubDate>
       
-      <guid>https://staaaldraad.github.io/2017/04/17/nat-to-nat-with-wireguard/</guid>
+      <guid>https://staaldraad.github.io/2017/04/17/nat-to-nat-with-wireguard/</guid>
       <description>A recent research project/idea required me to look into setting up a NAT-to-NAT VPN. The basic idea being that two NATed networks are able to communicate through a VPN and share resources. While researching possible VPN solutions, I remembered reading about WireGuard a new VPN that aims to be fast, secure and lightweight. This seemed like the perfect opportunity to both try out a new VPN implementation and accomplish the goals of the research project.</description>
     </item>
     

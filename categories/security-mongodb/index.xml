@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Security Mongodb on Staaldraad</title>
-    <link>https://staaaldraad.github.io/categories/security-mongodb/</link>
+    <link>https://staaldraad.github.io/categories/security-mongodb/</link>
     <description>Recent content in Security Mongodb on Staaldraad</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 15 Jun 2015 14:16:39 +0000</lastBuildDate>
     
-	<atom:link href="https://staaaldraad.github.io/categories/security-mongodb/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://staaldraad.github.io/categories/security-mongodb/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Mongo Shell escape</title>
-      <link>https://staaaldraad.github.io/2015/06/15/silly-mongoshell/</link>
+      <link>https://staaldraad.github.io/2015/06/15/silly-mongoshell/</link>
       <pubDate>Mon, 15 Jun 2015 14:16:39 +0000</pubDate>
       
-      <guid>https://staaaldraad.github.io/2015/06/15/silly-mongoshell/</guid>
+      <guid>https://staaldraad.github.io/2015/06/15/silly-mongoshell/</guid>
       <description>Mongo provides a native shell for interacting with local and remote MongoDB instances. In rare cases you may find that a user&amp;rsquo;s logon shell has been replaced with this Mongo shell, this could happen when there is a shared machine where you want developers/admins to access the database but not have native access to the host. Everytime the user logs in, they hit the mongo shell, can execute mongo db commands and thats it.</description>
     </item>
     

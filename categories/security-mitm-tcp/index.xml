@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Security Mitm Tcp on Staaldraad</title>
-    <link>https://staaaldraad.github.io/categories/security-mitm-tcp/</link>
+    <link>https://staaldraad.github.io/categories/security-mitm-tcp/</link>
     <description>Recent content in Security Mitm Tcp on Staaldraad</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 11 Dec 2016 16:14:39 +0000</lastBuildDate>
     
-	<atom:link href="https://staaaldraad.github.io/categories/security-mitm-tcp/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://staaldraad.github.io/categories/security-mitm-tcp/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>tcpprox - An intercepting TCP proxy</title>
-      <link>https://staaaldraad.github.io/2016/12/11/tcpprox/</link>
+      <link>https://staaldraad.github.io/2016/12/11/tcpprox/</link>
       <pubDate>Sun, 11 Dec 2016 16:14:39 +0000</pubDate>
       
-      <guid>https://staaaldraad.github.io/2016/12/11/tcpprox/</guid>
+      <guid>https://staaldraad.github.io/2016/12/11/tcpprox/</guid>
       <description>On numerous occasions I&amp;rsquo;ve run into custom binary network protocols that I&amp;rsquo;ve wanted to reverse. The usual goto here is to fireup wireshark/tcpdump and view the traffic as it goes accross the wire. This works really well in most cases, but how about traffic that uses TLS to encrypt the traffic? Unless you have the private key for the server, you are stuck with viewing encrypted traffic in wireshark. Not ideal for reverse engineering.</description>
     </item>
     

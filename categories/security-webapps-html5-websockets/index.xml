@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Security Webapps Html5 Websockets on Staaldraad</title>
-    <link>https://staaaldraad.github.io/categories/security-webapps-html5-websockets/</link>
+    <link>https://staaldraad.github.io/categories/security-webapps-html5-websockets/</link>
     <description>Recent content in Security Webapps Html5 Websockets on Staaldraad</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 10 Sep 2015 14:16:39 +0000</lastBuildDate>
     
-	<atom:link href="https://staaaldraad.github.io/categories/security-webapps-html5-websockets/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://staaldraad.github.io/categories/security-webapps-html5-websockets/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Viewing, modifying and replaying websockets</title>
-      <link>https://staaaldraad.github.io/2015/09/10/proxy-for-websockets/</link>
+      <link>https://staaldraad.github.io/2015/09/10/proxy-for-websockets/</link>
       <pubDate>Thu, 10 Sep 2015 14:16:39 +0000</pubDate>
       
-      <guid>https://staaaldraad.github.io/2015/09/10/proxy-for-websockets/</guid>
+      <guid>https://staaldraad.github.io/2015/09/10/proxy-for-websockets/</guid>
       <description>A few assessments back I ran into a web app that made libral use of websockets. Now it&amp;rsquo;s been a while since encountering an app that makes use of websockets for such a large portion of it&amp;rsquo;s content and I&amp;rsquo;d forgotten what a PITA it can be trying to intercept and replay websocket requests.
 Seeing as it was a web app assessment I naturally turned to trusty Burp Suite Pro. Burp has supported websockets for a long while now, but far as I could find, this support only allowed you to intercept websocket requests and view/modify them.</description>
     </item>
