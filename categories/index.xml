@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Categories on Staaldraad</title>
+    <link>https://staaaldraad.github.io/categories/</link>
+    <description>Recent content in Categories on Staaldraad</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://staaaldraad.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Databases Security Nosql</title>
+      <link>https://staaaldraad.github.io/categories/databases-security-nosql/</link>
+      <pubDate>Sun, 14 Jun 2015 18:23:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/categories/databases-security-nosql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Fileformats Security</title>
+      <link>https://staaaldraad.github.io/categories/fileformats-security/</link>
+      <pubDate>Sat, 22 Aug 2015 10:23:00 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/categories/fileformats-security/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Huawei Security Snmp</title>
+      <link>https://staaaldraad.github.io/categories/huawei-security-snmp/</link>
+      <pubDate>Wed, 17 Jun 2015 20:33:00 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/categories/huawei-security-snmp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Pentest Phishing</title>
+      <link>https://staaaldraad.github.io/categories/pentest-phishing/</link>
+      <pubDate>Wed, 02 Aug 2017 15:14:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/categories/pentest-phishing/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Pentest Phishing Dde</title>
+      <link>https://staaaldraad.github.io/categories/pentest-phishing-dde/</link>
+      <pubDate>Mon, 23 Oct 2017 15:14:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/categories/pentest-phishing-dde/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Security Mitm Tcp</title>
+      <link>https://staaaldraad.github.io/categories/security-mitm-tcp/</link>
+      <pubDate>Sun, 11 Dec 2016 16:14:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/categories/security-mitm-tcp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Security Mongodb</title>
+      <link>https://staaaldraad.github.io/categories/security-mongodb/</link>
+      <pubDate>Mon, 15 Jun 2015 14:16:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/categories/security-mongodb/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Security Shells Powershell</title>
+      <link>https://staaaldraad.github.io/categories/security-shells-powershell/</link>
+      <pubDate>Mon, 03 Oct 2016 15:31:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/categories/security-shells-powershell/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Security Webapps Html5 Websockets</title>
+      <link>https://staaaldraad.github.io/categories/security-webapps-html5-websockets/</link>
+      <pubDate>Thu, 10 Sep 2015 14:16:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/categories/security-webapps-html5-websockets/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Security Xxe</title>
+      <link>https://staaaldraad.github.io/categories/security-xxe/</link>
+      <pubDate>Sun, 11 Dec 2016 17:14:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/categories/security-xxe/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Vpn Infrastructure Research</title>
+      <link>https://staaaldraad.github.io/categories/vpn-infrastructure-research/</link>
+      <pubDate>Mon, 17 Apr 2017 13:14:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/categories/vpn-infrastructure-research/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

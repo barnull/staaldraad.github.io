@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js" prefix="og: http://ogp.me/ns#" xmlns:og="http://ogp.me/ns#"><!--<![endif]-->
+
+    <head>
+                <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="author" content="">
+  
+	
+        <meta property="og:site_name" content="Staaldraad">
+        <meta property="og:title" content="Staaldraad">
+        <meta property="og:url" content="https://staaaldraad.github.io/2015/09/10/proxy-for-websockets/">
+        <meta property="og:description" content="">
+    
+        <meta property="og:type" content="article" />
+        <meta property="og:article:author" content="" />
+        <meta property="og:article:published_time" content="2015-09-10T14:16:39Z" />
+    
+        <meta name="generator" content="Hugo 0.31-DEV" />
+        <title>Viewing, modifying and replaying websockets &middot; Staaldraad</title>
+        <link rel="canonical" href="https://staaaldraad.github.io" />
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="">
+        <link rel="stylesheet" type="text/css" href="https://staaaldraad.github.iocss/main.css"/>
+        <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300|Montserrat:700" rel="stylesheet" type="text/css">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+        <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    </head>
+
+<body>
+<!--[if lt IE 7]><p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chrome/‎">install Google Chrome</a> to experience this site.</p><![endif]-->
+
+    <header id="site-header">
+        <div class="container">
+            <a href="https://staaaldraad.github.io" alt="Staaldraad"><h1 class="blog-title heading">Staaldraad</h1></a>
+            <p class="blog-description"></p>
+        </div>
+    </header>
+<main class="content" role="main">
+	<div class="container">
+		<article class="post">
+	<header class="post-header">
+        <h3 class="p-post-title">Viewing, modifying and replaying websockets</h3>
+    </header>
+
+    <section class="post-content">
+        <p>A few assessments back I ran into a web app that made libral use of websockets. Now it&rsquo;s been a while since encountering an app that makes use of websockets for such a large portion of it&rsquo;s content and I&rsquo;d forgotten what a PITA it can be trying to intercept and replay websocket requests.</p>
+
+<p>Seeing as it was a web app assessment I naturally turned to trusty <a href="https://portswigger.net/burp/">Burp Suite Pro</a>. Burp has supported websockets for a long while now, but far as I could find, this support only allowed you to intercept websocket requests and view/modify them. There was no option to set intercept rules based on websocket content, and also no options for replaying a specific websocket frame or using a frame with Intruder.</p>
+
+<p>To help fill the gap of these missing functions I quickly slapped together a websocket proxy that can be used as an upstream proxy by Burp. This means we could use Burp for the awesome interception and standard HTTP tricks it can do, and we use the websocket proxy to do the &lsquo;repeater&rsquo; and &lsquo;intruder&rsquo; component.</p>
+
+<p>I&rsquo;ve written a full post about this over at the SensePost blog <a href="https://www.sensepost.com/blog/2015/another-intercepting-proxy/">https://www.sensepost.com/blog/2015/another-intercepting-proxy/</a>.</p>
+
+<p>So if you are interested in some more of the technical details / screenshots, head over there.</p>
+
+<p>The proxy is available on github at: <a href="https://github.com/staaldraad/wsproxy">github.com/staaldraad/wsproxy</a>.</p>
+
+<p>Please feel free to let me know about any bugs and updates are very welcome. Hopefully this is useful to someone else down the line.</p>
+
+<p>A quick note about websockets and the &lsquo;repeater&rsquo;, yes it isn&rsquo;t a true repeater as it creates a new websocket channel, however, since websockets have no idea of authentication and tend to use standard HTTP tricks for sessions, it allows us to do a fairly decent job.
+Websockets can also consist of binary data, currently the proxy doesn&rsquo;t allow you to view or repeat this type of traffic. Text data (usually just JSON) will work fine.</p>
+
+    </section>
+
+    <hr>
+
+    <footer class="post-footer">
+        <section class="f-1">
+            
+            
+            <p class="f-post-time"><time datetime="2015-09-10T14:16:39Z">September 10, 2015</time></p>
+        </section>
+                        
+        <section class="f-2">
+            <section class="share">
+                <span>Share:
+                <a class="icon-twitter" href="http://twitter.com/share?text=Viewing%2c%20modifying%20and%20replaying%20websockets&url=https%3a%2f%2fstaaaldraad.github.io%2f2015%2f09%2f10%2fproxy-for-websockets%2f"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="fa fa-twitter"></i>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fstaaaldraad.github.io%2f2015%2f09%2f10%2fproxy-for-websockets%2f"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="fa fa-facebook"></i>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https%3a%2f%2fstaaaldraad.github.io%2f2015%2f09%2f10%2fproxy-for-websockets%2f"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="fa fa-google-plus"></i>
+                </a>
+                </span>
+            </section>
+
+            
+        </section>
+                        
+    </footer>
+</article>
+	</div>
+</main>
+    <footer id="site-footer">
+        <div class="container">
+          
+          
+          
+          
+          <a href="https://staaaldraad.github.ioindex.xml" title="Get the RSS feed"><span class="tooltip"><i class="fa fa-rss"></i></span></a>
+          <section>&copy; <a href="https://staaaldraad.github.io"></a> 2017 | All rights reserved</section>
+          <section>Theme by <a href="http://www.jrdnbwmn.com">Jordan Bowman</a>. Generated with <a href="http://gohugo.io/">Hugo</a>.</section>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="https://staaaldraad.github.iojs/fittext.js"></script>
+    <script type="text/javascript">
+      $(".heading").fitText();
+    </script>
+
+
+
+</body>
+</html>

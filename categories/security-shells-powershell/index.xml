@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Security Shells Powershell on Staaldraad</title>
+    <link>https://staaaldraad.github.io/categories/security-shells-powershell/</link>
+    <description>Recent content in Security Shells Powershell on Staaldraad</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 03 Oct 2016 15:31:39 +0000</lastBuildDate>
+    
+	<atom:link href="https://staaaldraad.github.io/categories/security-shells-powershell/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Powershell Shells</title>
+      <link>https://staaaldraad.github.io/2016/10/03/powershell-shells/</link>
+      <pubDate>Mon, 03 Oct 2016 15:31:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/2016/10/03/powershell-shells/</guid>
+      <description>It&amp;rsquo;s been a while&amp;hellip; I figured it&amp;rsquo;s about time I post something here again.
+A while back I was required to see how much damage can be done by a malicious staff member. The one caveat here was that I had to test directly from the Windows box and had extremely limited outbound comms. For various reasons the usual tool-suites were out and I took this as a challenge to see how much damage I could do by coding tools on the &amp;ldquo;employee machine&amp;rdquo;.</description>
+    </item>
+    
+  </channel>
+</rss>

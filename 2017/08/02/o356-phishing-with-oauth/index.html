@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js" prefix="og: http://ogp.me/ns#" xmlns:og="http://ogp.me/ns#"><!--<![endif]-->
+
+    <head>
+                <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="author" content="">
+  
+	
+        <meta property="og:site_name" content="Staaldraad">
+        <meta property="og:title" content="Staaldraad">
+        <meta property="og:url" content="https://staaaldraad.github.io/2017/08/02/o356-phishing-with-oauth/">
+        <meta property="og:description" content="">
+    
+        <meta property="og:type" content="article" />
+        <meta property="og:article:author" content="" />
+        <meta property="og:article:published_time" content="2017-08-02T15:14:39Z" />
+    
+        <meta name="generator" content="Hugo 0.31-DEV" />
+        <title>Phishing with OAuth and o365/Azure &middot; Staaldraad</title>
+        <link rel="canonical" href="https://staaaldraad.github.io" />
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="">
+        <link rel="stylesheet" type="text/css" href="https://staaaldraad.github.iocss/main.css"/>
+        <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300|Montserrat:700" rel="stylesheet" type="text/css">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+        <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    </head>
+
+<body>
+<!--[if lt IE 7]><p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chrome/‎">install Google Chrome</a> to experience this site.</p><![endif]-->
+
+    <header id="site-header">
+        <div class="container">
+            <a href="https://staaaldraad.github.io" alt="Staaldraad"><h1 class="blog-title heading">Staaldraad</h1></a>
+            <p class="blog-description"></p>
+        </div>
+    </header>
+<main class="content" role="main">
+	<div class="container">
+		<article class="post">
+	<header class="post-header">
+        <h3 class="p-post-title">Phishing with OAuth and o365/Azure</h3>
+    </header>
+
+    <section class="post-content">
+        
+
+<p>Typically phishing has provided a low tech approach to getting access to credentials and services. The mainfocus up until now has been on getting username&amp;passwords or tricking users into executing code. Subsequently, user awareness has gone up and users are better at identifying suspicious pages. Experience has shown that the click-through rate on emails have remained high, while users have been (slightly) less likely to enter credentials and more likely to report the phishing page. Recently, while digging into the authentication options available in Office365, I realised that OAuth could allow for a stealthy phishing mechanism. The benefits that OAuth provide are numerous;</p>
+
+<ol>
+<li>Not your average phishing page / something new</li>
+<li>Hosted by our target (o365) - so no dodgy domains or trikery</li>
+<li>If users aren&rsquo;t entering actual credentials, they are less likely to report that they made a mistake</li>
+</ol>
+
+<p>Below I&rsquo;ll outline the process for crafting a phishing &lsquo;app&rsquo; and using this with Office365.</p>
+
+<p><em>Disclaimer</em>: I have reported this to MSRC and was told it appears to be a UI/Design issue and not a security issue.</p>
+
+<h1 id="what-is-oauth">What is OAuth</h1>
+
+<p>OAuth is designed to allow for third-party application access to Microsoft services, without disclosing user credentials, or constantly asking users to reauthenticate. Users log in once, give an application permission to access certain functions (scopes) and then forget about it.</p>
+
+<p>The design and implementation of OAuth in Office365/Azure is pretty well laid out in the <a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols-oauth-code">MS Documentation</a>.</p>
+
+<p>If you follow the link, you&rsquo;ll find a good description of the OAuth flow, namely:</p>
+
+<ol>
+<li>User navigates to: <a href="https://login.microsoft.com/common/oauth2/v2.0/authorize">https://login.microsoft.com/common/oauth2/v2.0/authorize</a></li>
+<li>User grants permission to your app and a redirect occurs to: <a href="https://your.application.host/authrized">https://your.application.host/authrized</a></li>
+<li>Your app requests an OAuth token from MS and then redirects the user, either to MS or any arbitrary site.</li>
+</ol>
+
+<p>The only <em>link</em> that your phishing target sees in this case is the <a href="https://login.microsoft.com/common/oauth2/v2.0/authorize">https://login.microsoft.com/common/oauth2/v2.0/authorize</a> link. It meets all the criteria users are trained to check for. It goes to the Microsoft domain, it has HTTPS, it loads Microsoft content and if the user is logged in, will actually greet them with their correct account details.</p>
+
+<h1 id="building-the-phish">Building the Phish</h1>
+
+<p>For this you&rsquo;ll require a valid Microsoft &lsquo;live&rsquo; account, I&rsquo;m simply using an Outlook account.</p>
+
+<h2 id="the-application">The &ldquo;application&rdquo;</h2>
+
+<p>Firstly you’ll need to create an <em>app</em> at <a href="https://apps.dev.microsoft.com">apps.dev.microsoft.com</a>. Here you&rsquo;ll simply be registering a valid application with Microsoft, giving it a name and defining the call back URLs.</p>
+
+<p>It&rsquo;s really easy, just follow the on-screen wizard!</p>
+
+<ol>
+<li>Set the application name (use something convincing)</li>
+<li>And set your Redirect URL</li>
+</ol>
+
+<p>The <em>Application Name</em>  is what will be displayed to the user, and this is what needs to convince them to trust your app or not. I’ve gone with <strong>Account Verification Service</strong>, the reasons for this will become clear soon. Oh, it also provides you with a convincing reason for users to click through, ie: &ldquo;Your account needs to be verified&hellip;&rdquo;, &ldquo;Your account has expired&hellip;&rdquo;, &ldquo;Confirm your account details&hellip;&rdquo; etc etc.</p>
+
+<p><img src="/assets/oauth_phishing_create_app.png" alt="Creating your App" /></p>
+
+<p>Next, you will need to use <em>add platform</em> to select <em>web</em>. Insert a <em>Redirect URL</em> – In version 1.0 of the OAuth API (and for non-o365 accounts) Microsoft will display the hostname to the user, just below the application name. Choose wisely if you are planning on using v1.0. Microsoft also forces HTTPS here, so ensure that you have a valid certificate on your site, otherwise the browser is going to be throwing up nasty warnings and the game will be up.</p>
+
+<p>Finally you need to select the permissions you want a user to grant your application. The permissions you choose are up to you, but try avoid selecting all permissions, this could result in raising suspicions. A useful permission to have is <em>offline_access</em>, as it allows is for your application to reauthenticate, without user credentials or user interaction, even once the access token has expired. Typically your app is only issued with an authorisation token, which is only valid for set period of time. When this expires, you&rsquo;ll need to get a new token, but the user will have to authorise your app to do this. With the offline_access permission, your app is issued with a <em>refresh token</em> token, which allows reauthentication at any point in time, even if your actual access token has expired.</p>
+
+<p><img src="/assets/oauth_phishing_select_permissions.png" alt="Select your permissions" /></p>
+
+<h2 id="the-redirect">The &ldquo;redirect&rdquo;</h2>
+
+<p>The last thing to setup is the actual <em>redirect url</em> application; this is where the user is redirected to, once they authorise your application, and you can get the code you need to request an access token from Microsoft.</p>
+
+<p>For this I&rsquo;ve written a bit of Go (sorry, I thought about re-coding this into Python and then got over it..)</p>
+
+<p><a href="https://gist.github.com/staaldraad/d4f8b6ed20adbf21e45835bb046d14ca">Redirect Application</a></p>
+
+<p>There are a few parts to change, namely <em>client_id</em>, <em>scope</em> and <em>redirect_url</em> (I&rsquo;ve commented these in the code). The application will be served over HTTPS and uses your <em>cert.pem</em> and <em>cert.key</em>. These should be valid for your domain and it&rsquo;s up to you where you get them.</p>
+
+<h1 id="phishy-phish">Phishy Phish</h1>
+
+<p>You&rsquo;ll now be able to send your phishing email with the link to authorise our application.</p>
+
+<p>The link should be changed to match your <em>client_id</em> (application id), your <em>redirect_url</em> and <em>scope</em>. If you wish you can also change the <em>state</em> but remember that you&rsquo;ll need to change the <em>state</em> in the Go script as well (this is used as a CSRF token).</p>
+
+<p><code>https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=fceae27c-cac4-4bd3-947e-eafc98594409&amp;response_type=code&amp;redirect_uri=https%3A%2F%2Fyour.application.host%2Fpermission&amp;response_mode=query&amp;scope=openid%20offline_access%20people.read%20contacts.read.shared%20mail.read&amp;state=12345</code></p>
+
+<p>Sending this link out, hopefully a user takes the bait and clicks. Once they do this, they should see one of the following:</p>
+
+<p><img src="/assets/oauth_phishing_login_page_2.png" alt="If they haven't logged in yet" /></p>
+
+<p><img src="/assets/oauth_phishing_login_page.png" alt="If they are logged in" /></p>
+
+<p>The user will either need to login or confirm the account they wish to use. They will then be redirected to the permission page. If using <em>v1.0</em> of the API, the user will be shown the domain used in your <em>redirect_url</em> - fortunately for us, v1.0 doesn&rsquo;t actually work that well with o365 anymore, and we can default to <em>v2.0</em>. Version 2 has a serious design flaw; your <em>App publisher website</em> is shown as <strong>microsoftaccounts.onmicrosoft.com</strong>, winning!</p>
+
+<p><img src="/assets/oauth_phishing_permission.png" alt="The permissions page" /></p>
+
+<p>Once the user clicks <em>accept</em> they will be redirected to our <em>redirect_url</em>, where the Go script will extract the authorisation code, request an OAuth token from Microsoft and redirect the user to <em><a href="https://outlook.office365.com">https://outlook.office365.com</a></em>. All of this happens without warning and the user would only &ldquo;see&rdquo; a redirect to Outlook.</p>
+
+<p><img src="/assets/oauth_phishing_request_token.png" alt="Requesting the OAuth token" /></p>
+
+<p>This token retrieved includes our <em>refresh_token</em> so save this somewhere for future use.</p>
+
+<h1 id="exploit">Exploit</h1>
+
+<p>Now that you have a valid OAuth token, this can be used to interact with the target user&rsquo;s account. A detailed list of API calls is available through <a href="https://msdn.microsoft.com/en-us/office/office365/api/mail-rest-operations">MSDN</a>.</p>
+
+<p>A few quick examples, how about retrieving the messages and listing their subjects? Use: <strong><a href="https://outlook.office.com/api/v2.0/me/messages">https://outlook.office.com/api/v2.0/me/messages</a></strong></p>
+
+<p><img src="/assets/oauth_phishing_interact_with_mail.png" alt="Request a short list of emails &amp; subjects" /></p>
+
+<p>The API also allows for search, so you could search for juicy info, such as passwords. Use: <strong><a href="https://outlook.office.com/api/v2.0/me/messages?search=&quot;password&quot;">https://outlook.office.com/api/v2.0/me/messages?search=&quot;password&quot;</a></strong></p>
+
+<p><img src="/assets/oauth_phishing_interact_with_mail2.png" alt="Show emails containing the word *password*" /></p>
+
+<h1 id="fin">Fin</h1>
+
+<p>There are a bunch of attack options available here, with the graph API providing a ton of interesting functionality. How you choose to use this is completely up to you. I find it to be a nice means for gaining a foothold, you could even start sending mail using the compromised account (if you requested the correct permission set).</p>
+
+<h2 id="fix">Fix</h2>
+
+<p>This is very similar to the OAuth issue that affected <a href="https://arstechnica.com/information-technology/2017/05/dont-trust-oauth-why-the-google-docs-worm-was-so-convincing/">Google Apps not too long ago</a>. That incident, as mentioned in the linked article, was particularly successful as it presented users with a valid interface, and no indication that something was amiss. The same steps should be taken here to make it clear to users that this is a third-party app requesting access. I guess this is probably worm-able as well. For the curious, &ldquo;Live&rdquo; accounts get a slightly better dialog. At least it displays the &ldquo;app publisher webpage&rdquo; (in this case an IP address)</p>
+
+<p><img src="/assets/oauth_phishing_live_perms.png" alt="Live dialog" /></p>
+
+    </section>
+
+    <hr>
+
+    <footer class="post-footer">
+        <section class="f-1">
+            
+            
+            <p class="f-post-time"><time datetime="2017-08-02T15:14:39Z">August 2, 2017</time></p>
+        </section>
+                        
+        <section class="f-2">
+            <section class="share">
+                <span>Share:
+                <a class="icon-twitter" href="http://twitter.com/share?text=Phishing%20with%20OAuth%20and%20o365%2fAzure&url=https%3a%2f%2fstaaaldraad.github.io%2f2017%2f08%2f02%2fo356-phishing-with-oauth%2f"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="fa fa-twitter"></i>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fstaaaldraad.github.io%2f2017%2f08%2f02%2fo356-phishing-with-oauth%2f"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="fa fa-facebook"></i>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https%3a%2f%2fstaaaldraad.github.io%2f2017%2f08%2f02%2fo356-phishing-with-oauth%2f"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="fa fa-google-plus"></i>
+                </a>
+                </span>
+            </section>
+
+            
+        </section>
+                        
+    </footer>
+</article>
+	</div>
+</main>
+    <footer id="site-footer">
+        <div class="container">
+          
+          
+          
+          
+          <a href="https://staaaldraad.github.ioindex.xml" title="Get the RSS feed"><span class="tooltip"><i class="fa fa-rss"></i></span></a>
+          <section>&copy; <a href="https://staaaldraad.github.io"></a> 2017 | All rights reserved</section>
+          <section>Theme by <a href="http://www.jrdnbwmn.com">Jordan Bowman</a>. Generated with <a href="http://gohugo.io/">Hugo</a>.</section>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="https://staaaldraad.github.iojs/fittext.js"></script>
+    <script type="text/javascript">
+      $(".heading").fitText();
+    </script>
+
+
+
+</body>
+</html>

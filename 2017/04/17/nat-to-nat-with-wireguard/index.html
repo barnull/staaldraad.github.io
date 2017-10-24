@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js" prefix="og: http://ogp.me/ns#" xmlns:og="http://ogp.me/ns#"><!--<![endif]-->
+
+    <head>
+                <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="author" content="">
+  
+	
+        <meta property="og:site_name" content="Staaldraad">
+        <meta property="og:title" content="Staaldraad">
+        <meta property="og:url" content="https://staaaldraad.github.io/2017/04/17/nat-to-nat-with-wireguard/">
+        <meta property="og:description" content="">
+    
+        <meta property="og:type" content="article" />
+        <meta property="og:article:author" content="" />
+        <meta property="og:article:published_time" content="2017-04-17T13:14:39Z" />
+    
+        <meta name="generator" content="Hugo 0.31-DEV" />
+        <title>NAT-to-NAT VPN with WireGuard &middot; Staaldraad</title>
+        <link rel="canonical" href="https://staaaldraad.github.io" />
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="">
+        <link rel="stylesheet" type="text/css" href="https://staaaldraad.github.iocss/main.css"/>
+        <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300|Montserrat:700" rel="stylesheet" type="text/css">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+        <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    </head>
+
+<body>
+<!--[if lt IE 7]><p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chrome/‎">install Google Chrome</a> to experience this site.</p><![endif]-->
+
+    <header id="site-header">
+        <div class="container">
+            <a href="https://staaaldraad.github.io" alt="Staaldraad"><h1 class="blog-title heading">Staaldraad</h1></a>
+            <p class="blog-description"></p>
+        </div>
+    </header>
+<main class="content" role="main">
+	<div class="container">
+		<article class="post">
+	<header class="post-header">
+        <h3 class="p-post-title">NAT-to-NAT VPN with WireGuard</h3>
+    </header>
+
+    <section class="post-content">
+        
+
+<p>A recent research project/idea required me to look into setting up a NAT-to-NAT VPN. The basic idea being that two NATed networks are able to communicate through a VPN and share resources. While researching possible VPN solutions, I remembered reading about <a href="https://wireguard.io">WireGuard</a> a new VPN that aims to be fast, secure and lightweight. This seemed like the perfect opportunity to both try out a new VPN implementation and accomplish the goals of the research project.</p>
+
+<h2 id="planning">Planning</h2>
+
+<p>The basic idea was to connect to NATed environments, this meant neither of the environments had a [static] public IP address, and I required an intermediate server to act as a gateway.</p>
+
+<p>I further required resource sharing to be limited, where NAT-A was able to access resources in NAT-B but NAT-B wasn&rsquo;t able to access the resources hosted in NAT-A. Setup also needed to be fast, lightweight and possible through a service script.</p>
+
+<p>This resulted in the basic design was as follows:
+<img src="/assets/wireguard_vpn_setup.png" alt="Infrastructure design" /></p>
+
+<p>For the VPN I used a private network range, which is usually unassigned, while both NATed networks had their own internal network ranges.</p>
+
+<ul>
+<li>VPN: 5.5.5.0/24</li>
+<li>NAT-A: 192.168.1.0/24</li>
+<li>NAT-B: 10.4.0.0/24</li>
+</ul>
+
+<p>NAT-A needed a route for all traffic destined to 10.4.0.0/24 to be set to send traffic through the VPN, while NAT-B could not access the NAT-A network range.</p>
+
+<h2 id="wireguard-setup">WireGuard Setup</h2>
+
+<p>WireGuard proved simple to setup in all my test environments. The intermediate/gateway server was an Ubuntu 16.04 server hosted in <a href="https://digitalocean.com">DigitalOcean</a>. While NAT-A was my local Fedora 25 host and the NAT-B host was an <a href="https://cloud-images.ubuntu.com/xenial/">Ubuntu 16.04 Cloud Image</a> (I wanted to have cloud-init support). I&rsquo;m not going to go into the installation of WireGuard here, the details are available on the <a href="https://www.wireguard.io/install/">offical site</a>.</p>
+
+<h3 id="vpn-setup">VPN Setup</h3>
+
+<p>The first component that needed to be configured was the actual VPN and getting NAT-A and NAT-B to communicate.</p>
+
+<p>I&rsquo;ll use the following VARIABLES in the commands below, simply replace them with the correct values:</p>
+
+<ul>
+<li>SERVERPUB : <code>cat publickey</code> on the VPN server after using <code>wg genkey</code></li>
+<li>NATAPUB : <code>cat publickey</code> on NAT-A host</li>
+<li>NATBPUB : <code>cat publickey</code> on NAT-B host</li>
+</ul>
+
+<h4 id="gateway-server-setup">Gateway server setup:</h4>
+
+<p>Ensure IP forwarding is enabled:</p>
+
+<pre><code>sysctl -w net.ipv4.ip_forward=1
+</code></pre>
+
+<p>And setup the VPN:</p>
+
+<pre><code>wg genkey | tee privatekey | wg pubkey &gt; publickey
+ip link add dev wg0 type wireguard
+ip address add dev wg0 5.5.5.1/24
+wg set wg0 private-key privatekey listen-port 12000
+ip link set up dev wg0
+</code></pre>
+
+<h4 id="nat-a-vpn-setup">NAT-A VPN setup:</h4>
+
+<pre><code>wg genkey | tee privatekey | wg pubkey &gt; publickey
+ip link add dev wg0 type wireguard
+ip address add dev wg0 5.5.5.3/24
+wg set wg0 private-key privatekey peer SERVERPUB allowed-ips 5.5.5.0/24 endpoint vpn.server.com:12000 persistent-keepalive 10
+ip link set up dev wg0
+</code></pre>
+
+<h4 id="nat-b-vpn-setup">NAT-B VPN setup:</h4>
+
+<pre><code>wg genkey | tee privatekey | wg pubkey &gt; publickey
+ip link add dev wg0 type wireguard
+ip address add dev wg0 5.5.5.2/24
+wg set wg0 private-key privatekey peer SERVERPUB allowed-ips 5.5.5.0/24 endpoint vpn.server.com:12000 persistent-keepalive 10
+ip link set up dev wg0
+</code></pre>
+
+<p>This setups up our VPN and allows the NAT-A and NAT-B hosts to communicate through the 5.5.5.0/24 network. At this point it&rsquo;s not possible to share resources.</p>
+
+<h3 id="share-resources">Share Resources</h3>
+
+<p>Now that the two NATs are able to communicate, it&rsquo;s time to setup the sharing of resources. Remember that NAT-A should access NAT-B resources, but not the other way around.</p>
+
+<p>To allow forwarding of the traffic by our gateway server, a few changes need to be made. Firstly the new Peering information needs to be enabled in WireGuard, so that WireGuard knows to tag and encrypt the correct values.</p>
+
+<pre><code>wg set wg0 peer NATAPUB allowed-ips 5.5.5.3/32,0.0.0.0/24
+wg set wg0 peer NATBPUB allowed-ips 5.5.5.2/32,10.4.0.0/24
+</code></pre>
+
+<p>Some <strong>iptables</strong> foo needs to be applied to allow forwarding of traffic through the gateway. A new route is added for our NAT-B range that needs to be accessible.</p>
+
+<pre><code>ip route add 10.4.0.0/24 dev wg0
+
+iptables -A FORWARD -i wg0 -j ACCEPT
+iptables -A FORWARD -o wg0 -j ACCEPT
+iptables -t nat -A POSTROUTING -o wg0 -j MASQUERADE
+</code></pre>
+
+<p>Next NAT-A needs to be setup to correctly route traffic for the resources in NAT-B.</p>
+
+<p>For this, the WireGuard peer information is updated and a new route is added.</p>
+
+<pre><code>wg set wg0 private-key privatekey peer SERVERPUB allowed-ips 0.0.0.0/0 endpoint vpn.server.com:12000 persistent-keepalive 25
+ip route add 10.4.0.0/24 via 5.5.5.1 dev wg0
+</code></pre>
+
+<p>Finally, the NAT-B host needs to be updated to be able to forward traffic to the resources inside it&rsquo;s LAN.</p>
+
+<pre><code>sysctl -w net.ipv4.ip_forward=1
+iptables -A FORWARD -i wg0 -j ACCEPT
+iptables -A FORWARD -o wg0 -j ACCEPT
+iptables -t nat -A POSTROUTING -o wg0 -j MASQUERADE
+iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE
+</code></pre>
+
+<p>At this point it should be possible for the NAT-A host to access resources inside NAT-B. Any requests for addresses in the 10.4.0.0/24 range will be routed through the VPN, forwarded by the gateway server to NAT-B, which will then forward to hosts inside the LAN.</p>
+
+<h3 id="extras">Extras</h3>
+
+<p>For my tests I needed to be able to make certain ports from the NAT-A host accessible to hosts within NAT-B. More specifically, I needed host 10.4.0.10 to spawn a reverse shell, without knowing the IP address of NAT-A. For this, I forwared a port range on the NAT-B host to our NAT-A host;</p>
+
+<pre><code>iptables -t nat -A PREROUTING -i ens3 -p tcp --dport 4000:5000 -j DNAT --to 5.5.5.3:4000-5000
+</code></pre>
+
+<h4 id="as-a-service">As a service</h4>
+
+<p>Turning this into a service on NAT-B so that the VPN would come up automatically at boot was also needed and straight forward to implement. The iptables rules were saved and restored using iptables-save.</p>
+
+<p>For the VPN service a systemd unit file was created:</p>
+
+<pre><code>[Unit]
+Description=Starts the wireguard VPN
+After=network-online.target
+
+[Service]
+ExecStart=/opt/wireguard/vpnup
+
+[Install]
+WantedBy=default.target
+</code></pre>
+
+<p>And the vpnup script in <code>/opt/wireguard</code> looked as follows:</p>
+
+<pre><code>#!/bin/sh -
+
+SERVERPUB=&quot;$(cat /opt/wireguard/serverpub)&quot;
+SERVER=&quot;$(cat /opt/wireguard/serverhostname)&quot;
+PRIVATEKEY=&quot;/opt/wireguard/privatekey&quot;
+
+ip link del dev wg0
+ip link add dev wg0 type wireguard
+ip address add dev wg0 5.5.5.2/24
+wg set wg0 private-key $PRIVATEKEY peer $SERVERPUB allowed-ips 5.5.5.0/24,10.4.0.0/24 endpoint $SERVER persistent-keepalive 10
+ip link set up dev wg0
+</code></pre>
+
+    </section>
+
+    <hr>
+
+    <footer class="post-footer">
+        <section class="f-1">
+            
+            
+            <p class="f-post-time"><time datetime="2017-04-17T13:14:39Z">April 17, 2017</time></p>
+        </section>
+                        
+        <section class="f-2">
+            <section class="share">
+                <span>Share:
+                <a class="icon-twitter" href="http://twitter.com/share?text=NAT-to-NAT%20VPN%20with%20WireGuard&url=https%3a%2f%2fstaaaldraad.github.io%2f2017%2f04%2f17%2fnat-to-nat-with-wireguard%2f"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="fa fa-twitter"></i>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fstaaaldraad.github.io%2f2017%2f04%2f17%2fnat-to-nat-with-wireguard%2f"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="fa fa-facebook"></i>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https%3a%2f%2fstaaaldraad.github.io%2f2017%2f04%2f17%2fnat-to-nat-with-wireguard%2f"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="fa fa-google-plus"></i>
+                </a>
+                </span>
+            </section>
+
+            
+        </section>
+                        
+    </footer>
+</article>
+	</div>
+</main>
+    <footer id="site-footer">
+        <div class="container">
+          
+          
+          
+          
+          <a href="https://staaaldraad.github.ioindex.xml" title="Get the RSS feed"><span class="tooltip"><i class="fa fa-rss"></i></span></a>
+          <section>&copy; <a href="https://staaaldraad.github.io"></a> 2017 | All rights reserved</section>
+          <section>Theme by <a href="http://www.jrdnbwmn.com">Jordan Bowman</a>. Generated with <a href="http://gohugo.io/">Hugo</a>.</section>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="https://staaaldraad.github.iojs/fittext.js"></script>
+    <script type="text/javascript">
+      $(".heading").fitText();
+    </script>
+
+
+
+</body>
+</html>

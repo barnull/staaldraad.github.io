@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Fileformats Security on Staaldraad</title>
+    <link>https://staaaldraad.github.io/categories/fileformats-security/</link>
+    <description>Recent content in Fileformats Security on Staaldraad</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 22 Aug 2015 10:23:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://staaaldraad.github.io/categories/fileformats-security/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Abusing File Converters</title>
+      <link>https://staaaldraad.github.io/2015/08/22/abusing-file-converters/</link>
+      <pubDate>Sat, 22 Aug 2015 10:23:00 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/2015/08/22/abusing-file-converters/</guid>
+      <description>Every now and then you run into a new file format and you find that you may not have a tool to parse that file. Or you are looking for an easy to use solution for you mom to access the photo&amp;rsquo;s you sent her in a .tar archive. This is where file conversion services come in, a quick Google for &amp;ldquo;online file converter&amp;rdquo; will yield multiple results. One thing to keep in mind when converting files, is that different file formats may support different features.</description>
+    </item>
+    
+  </channel>
+</rss>

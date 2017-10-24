@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Huawei Security Snmp on Staaldraad</title>
+    <link>https://staaaldraad.github.io/categories/huawei-security-snmp/</link>
+    <description>Recent content in Huawei Security Snmp on Staaldraad</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 17 Jun 2015 20:33:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://staaaldraad.github.io/categories/huawei-security-snmp/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Huawei Quidway Password Extraction</title>
+      <link>https://staaaldraad.github.io/2015/06/17/huawei-quidway-snmp-and-passwords/</link>
+      <pubDate>Wed, 17 Jun 2015 20:33:00 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/2015/06/17/huawei-quidway-snmp-and-passwords/</guid>
+      <description>In the past our favourite hardware vendor to pick on was Cisco these days however, there is a new kid on the block - Huawei. We all know about the dangers of SNMP and default community strings, think Cisco and tftp. Seems like Huawei suffers from similar fail. Like all routers, switches, servers, ect out there, Huawei devices can be managed through SNMP. And just like other devices in the wild, SNMP is mostly configured with the community strings public and private as defaults.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Security Xxe on Staaldraad</title>
+    <link>https://staaaldraad.github.io/categories/security-xxe/</link>
+    <description>Recent content in Security Xxe on Staaldraad</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 11 Dec 2016 17:14:39 +0000</lastBuildDate>
+    
+	<atom:link href="https://staaaldraad.github.io/categories/security-xxe/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>XXE FTP Server - A {web,ftp}-server for XXE</title>
+      <link>https://staaaldraad.github.io/2016/12/11/xxeftp/</link>
+      <pubDate>Sun, 11 Dec 2016 17:14:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/2016/12/11/xxeftp/</guid>
+      <description>XXE - FTP OoB basics XXE offers a great attack avenue for reading files from a vulnerable web-app. One of my favourite XXE attacks involves protocol handler abuse, where you use FTP to do an out of band read. This is useful in those cases where you have XXE but it is blind. Unlike the normal OoB retreival through HTTP, FTP works with newer versions of Java (&amp;gt;1.7) and there are fewer characters which break the retrieval.</description>
+    </item>
+    
+  </channel>
+</rss>

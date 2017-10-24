@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Staaldraad</title>
+    <link>https://staaaldraad.github.io/post/</link>
+    <description>Recent content in Posts on Staaldraad</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 23 Oct 2017 15:14:39 +0000</lastBuildDate>
+    
+	<atom:link href="https://staaaldraad.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>MSWord - Obfuscation with Field Codes</title>
+      <link>https://staaaldraad.github.io/2017/10/23/msword-field-codes/</link>
+      <pubDate>Mon, 23 Oct 2017 15:14:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/2017/10/23/msword-field-codes/</guid>
+      <description>A few weeks back Saif El-Sherei and I posted on the SensePost blog about DDE and getting command exec in MSWord without macros. This post got way more attention than we initially expected it would. Since then DDE has been used in phishing and malware campaigns, as well as legitimate red-team engagements. With the rapid rise in attacks using DDE, detection has been stepped up and most AV engines have basic DDE detection built in.</description>
+    </item>
+    
+    <item>
+      <title>Phishing with OAuth and o365/Azure</title>
+      <link>https://staaaldraad.github.io/2017/08/02/o356-phishing-with-oauth/</link>
+      <pubDate>Wed, 02 Aug 2017 15:14:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/2017/08/02/o356-phishing-with-oauth/</guid>
+      <description>Typically phishing has provided a low tech approach to getting access to credentials and services. The mainfocus up until now has been on getting username&amp;amp;passwords or tricking users into executing code. Subsequently, user awareness has gone up and users are better at identifying suspicious pages. Experience has shown that the click-through rate on emails have remained high, while users have been (slightly) less likely to enter credentials and more likely to report the phishing page.</description>
+    </item>
+    
+    <item>
+      <title>NAT-to-NAT VPN with WireGuard</title>
+      <link>https://staaaldraad.github.io/2017/04/17/nat-to-nat-with-wireguard/</link>
+      <pubDate>Mon, 17 Apr 2017 13:14:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/2017/04/17/nat-to-nat-with-wireguard/</guid>
+      <description>A recent research project/idea required me to look into setting up a NAT-to-NAT VPN. The basic idea being that two NATed networks are able to communicate through a VPN and share resources. While researching possible VPN solutions, I remembered reading about WireGuard a new VPN that aims to be fast, secure and lightweight. This seemed like the perfect opportunity to both try out a new VPN implementation and accomplish the goals of the research project.</description>
+    </item>
+    
+    <item>
+      <title>XXE FTP Server - A {web,ftp}-server for XXE</title>
+      <link>https://staaaldraad.github.io/2016/12/11/xxeftp/</link>
+      <pubDate>Sun, 11 Dec 2016 17:14:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/2016/12/11/xxeftp/</guid>
+      <description>XXE - FTP OoB basics XXE offers a great attack avenue for reading files from a vulnerable web-app. One of my favourite XXE attacks involves protocol handler abuse, where you use FTP to do an out of band read. This is useful in those cases where you have XXE but it is blind. Unlike the normal OoB retreival through HTTP, FTP works with newer versions of Java (&amp;gt;1.7) and there are fewer characters which break the retrieval.</description>
+    </item>
+    
+    <item>
+      <title>tcpprox - An intercepting TCP proxy</title>
+      <link>https://staaaldraad.github.io/2016/12/11/tcpprox/</link>
+      <pubDate>Sun, 11 Dec 2016 16:14:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/2016/12/11/tcpprox/</guid>
+      <description>On numerous occasions I&amp;rsquo;ve run into custom binary network protocols that I&amp;rsquo;ve wanted to reverse. The usual goto here is to fireup wireshark/tcpdump and view the traffic as it goes accross the wire. This works really well in most cases, but how about traffic that uses TLS to encrypt the traffic? Unless you have the private key for the server, you are stuck with viewing encrypted traffic in wireshark. Not ideal for reverse engineering.</description>
+    </item>
+    
+    <item>
+      <title>Powershell Shells</title>
+      <link>https://staaaldraad.github.io/2016/10/03/powershell-shells/</link>
+      <pubDate>Mon, 03 Oct 2016 15:31:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/2016/10/03/powershell-shells/</guid>
+      <description>It&amp;rsquo;s been a while&amp;hellip; I figured it&amp;rsquo;s about time I post something here again.
+A while back I was required to see how much damage can be done by a malicious staff member. The one caveat here was that I had to test directly from the Windows box and had extremely limited outbound comms. For various reasons the usual tool-suites were out and I took this as a challenge to see how much damage I could do by coding tools on the &amp;ldquo;employee machine&amp;rdquo;.</description>
+    </item>
+    
+    <item>
+      <title>Viewing, modifying and replaying websockets</title>
+      <link>https://staaaldraad.github.io/2015/09/10/proxy-for-websockets/</link>
+      <pubDate>Thu, 10 Sep 2015 14:16:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/2015/09/10/proxy-for-websockets/</guid>
+      <description>A few assessments back I ran into a web app that made libral use of websockets. Now it&amp;rsquo;s been a while since encountering an app that makes use of websockets for such a large portion of it&amp;rsquo;s content and I&amp;rsquo;d forgotten what a PITA it can be trying to intercept and replay websocket requests.
+Seeing as it was a web app assessment I naturally turned to trusty Burp Suite Pro. Burp has supported websockets for a long while now, but far as I could find, this support only allowed you to intercept websocket requests and view/modify them.</description>
+    </item>
+    
+    <item>
+      <title>Abusing File Converters</title>
+      <link>https://staaaldraad.github.io/2015/08/22/abusing-file-converters/</link>
+      <pubDate>Sat, 22 Aug 2015 10:23:00 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/2015/08/22/abusing-file-converters/</guid>
+      <description>Every now and then you run into a new file format and you find that you may not have a tool to parse that file. Or you are looking for an easy to use solution for you mom to access the photo&amp;rsquo;s you sent her in a .tar archive. This is where file conversion services come in, a quick Google for &amp;ldquo;online file converter&amp;rdquo; will yield multiple results. One thing to keep in mind when converting files, is that different file formats may support different features.</description>
+    </item>
+    
+    <item>
+      <title>Huawei Quidway Password Extraction</title>
+      <link>https://staaaldraad.github.io/2015/06/17/huawei-quidway-snmp-and-passwords/</link>
+      <pubDate>Wed, 17 Jun 2015 20:33:00 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/2015/06/17/huawei-quidway-snmp-and-passwords/</guid>
+      <description>In the past our favourite hardware vendor to pick on was Cisco these days however, there is a new kid on the block - Huawei. We all know about the dangers of SNMP and default community strings, think Cisco and tftp. Seems like Huawei suffers from similar fail. Like all routers, switches, servers, ect out there, Huawei devices can be managed through SNMP. And just like other devices in the wild, SNMP is mostly configured with the community strings public and private as defaults.</description>
+    </item>
+    
+    <item>
+      <title>Mongo Shell escape</title>
+      <link>https://staaaldraad.github.io/2015/06/15/silly-mongoshell/</link>
+      <pubDate>Mon, 15 Jun 2015 14:16:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/2015/06/15/silly-mongoshell/</guid>
+      <description>Mongo provides a native shell for interacting with local and remote MongoDB instances. In rare cases you may find that a user&amp;rsquo;s logon shell has been replaced with this Mongo shell, this could happen when there is a shared machine where you want developers/admins to access the database but not have native access to the host. Everytime the user logs in, they hit the mongo shell, can execute mongo db commands and thats it.</description>
+    </item>
+    
+    <item>
+      <title>Hipsters and data</title>
+      <link>https://staaaldraad.github.io/2015/06/14/hipsters-and-data/</link>
+      <pubDate>Sun, 14 Jun 2015 18:23:39 +0000</pubDate>
+      
+      <guid>https://staaaldraad.github.io/2015/06/14/hipsters-and-data/</guid>
+      <description>A while back I spent some time playing with the “modern” database implementations, more affectionately known as hipster tech. These are mostly your so-called NoSQL, big-data, ect databases. Trying to interact with these databases required numerous scripts to be written, one for each database implementation. After chatting to @PaulWebSec I decided to merge these into a single tool. Thus HippyDB Tool was born.
+The following databases are supported:
+ Aerospike Cassandra Hbase Hive Memcached Mongodb Redis Riak  A quick scan of AWS and Google Cloud hosting showed that the vast majority of these databases are deployed on default ports, listening on all interfaces and most critically, without any authentication.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js" prefix="og: http://ogp.me/ns#" xmlns:og="http://ogp.me/ns#"><!--<![endif]-->
+
+    <head>
+                <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="author" content="">
+  
+	
+        <meta property="og:site_name" content="Staaldraad">
+        <meta property="og:title" content="Staaldraad">
+        <meta property="og:url" content="https://staaaldraad.github.io/2015/06/14/hipsters-and-data/">
+        <meta property="og:description" content="">
+    
+        <meta property="og:type" content="article" />
+        <meta property="og:article:author" content="" />
+        <meta property="og:article:published_time" content="2015-06-14T18:23:39Z" />
+    
+        <meta name="generator" content="Hugo 0.31-DEV" />
+        <title>Hipsters and data &middot; Staaldraad</title>
+        <link rel="canonical" href="https://staaaldraad.github.io" />
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="">
+        <link rel="stylesheet" type="text/css" href="https://staaaldraad.github.iocss/main.css"/>
+        <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300|Montserrat:700" rel="stylesheet" type="text/css">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+        <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    </head>
+
+<body>
+<!--[if lt IE 7]><p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chrome/‎">install Google Chrome</a> to experience this site.</p><![endif]-->
+
+    <header id="site-header">
+        <div class="container">
+            <a href="https://staaaldraad.github.io" alt="Staaldraad"><h1 class="blog-title heading">Staaldraad</h1></a>
+            <p class="blog-description"></p>
+        </div>
+    </header>
+<main class="content" role="main">
+	<div class="container">
+		<article class="post">
+	<header class="post-header">
+        <h3 class="p-post-title">Hipsters and data</h3>
+    </header>
+
+    <section class="post-content">
+        <p>A while back I spent some time playing with the “modern” database implementations, more affectionately known as hipster tech. These are mostly your so-called NoSQL, big-data, ect databases. Trying to interact with these databases required numerous scripts to be written, one for each database implementation.  After chatting to <a href="https://twitter.com/paulwebsec">@PaulWebSec</a> I decided to merge these into a single tool. Thus <a href="https://github.com/staaldraad/hippydb">HippyDB Tool</a> was born.</p>
+
+<p>The following databases are supported:</p>
+
+<ul>
+<li>Aerospike</li>
+<li>Cassandra</li>
+<li>Hbase</li>
+<li>Hive</li>
+<li>Memcached</li>
+<li>Mongodb</li>
+<li>Redis</li>
+<li>Riak</li>
+</ul>
+
+<p>A quick scan of AWS and Google Cloud hosting showed that the vast majority of these databases are deployed on default ports, listening on all interfaces and most critically, without any authentication. Furthermore, <a href="https://www.shodan.io/search?query=port%3A27017">Shodan reports</a> around ~59k MongoDB instances on the default port of 27017 and again, all the data is available for all to view.</p>
+
+<p>Having a tool to easily interact with these deployments hightlights just how much data is available and what damage this could cause. Numerous instances of user creds, personal information and even credit-card numbers can be found.</p>
+
+<p>The tool is written in NodeJS as it just felt write to write in a &ldquo;hipster&rdquo; language..
+To use HippyDB, simply fork the <a href="https://github.com/staaldraad/hippydb">Github project</a>, install the requirements and you should be good to go.</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone git@github.com:staaldraad/hippydb.git
+$ cd hippydb
+$ npm install
+$ nodejs hippydb.js </code></pre></div>
+
+<p>Interaction is pretty straight forward, with a menu driven interface. <code>help</code> will give you all the available commands and the tool even includes tab-completion! A sample session against a Riak instances may look as follows:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ nodejs hippydb.js
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Hippy Database interaction tool.
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Author: etienne@sensepost.com
+
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Type help to get started
+&gt; set host <span style="color:#ae81ff">10</span>.10.10.1
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> host<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>.10.10.1
+&gt; riak help
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Riak dumper -- Help
+Commands: 
+&gt; riak status                       //Check <span style="color:#66d9ef">if</span> we can connect to the database
+&gt; riak buckets                      //list all buckets on the host
+&gt; riak keys  &lt;bucket&gt;               //list all keys in a bucket
+&gt; riak dumpk &lt;bucket&gt; &lt;key&gt;         //dump value of key
+&gt; riak dump  &lt;bucket&gt;               //show <span style="color:#e6db74">&#39;limit&#39;</span> number of values in a bucket
+
+&gt; riak status
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Connected! Node is <span style="color:#f92672">[</span>riak@bbdev1.10.10.10.1<span style="color:#f92672">]</span>
+&gt; riak buckets
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Found <span style="color:#f92672">[</span><span style="color:#ae81ff">10</span><span style="color:#f92672">]</span> Buckets
+private_storage
+privacy
+offline_msg
+passwd
+roster
+...&lt;snip&gt;...
+
+&gt; riak keys passwd
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Found <span style="color:#f92672">[</span><span style="color:#ae81ff">70</span><span style="color:#f92672">]</span> keys
+x123545@10.10.10.1
+...&lt;snip&gt;...
+
+&gt; exit
+Cheerio old-chap</code></pre></div></p>
+
+<p>Happy hipster hunting and please fork and contribute!</p>
+
+    </section>
+
+    <hr>
+
+    <footer class="post-footer">
+        <section class="f-1">
+            
+            
+            <p class="f-post-time"><time datetime="2015-06-14T18:23:39Z">June 14, 2015</time></p>
+        </section>
+                        
+        <section class="f-2">
+            <section class="share">
+                <span>Share:
+                <a class="icon-twitter" href="http://twitter.com/share?text=Hipsters%20and%20data&url=https%3a%2f%2fstaaaldraad.github.io%2f2015%2f06%2f14%2fhipsters-and-data%2f"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="fa fa-twitter"></i>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fstaaaldraad.github.io%2f2015%2f06%2f14%2fhipsters-and-data%2f"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="fa fa-facebook"></i>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https%3a%2f%2fstaaaldraad.github.io%2f2015%2f06%2f14%2fhipsters-and-data%2f"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="fa fa-google-plus"></i>
+                </a>
+                </span>
+            </section>
+
+            
+        </section>
+                        
+    </footer>
+</article>
+	</div>
+</main>
+    <footer id="site-footer">
+        <div class="container">
+          
+          
+          
+          
+          <a href="https://staaaldraad.github.ioindex.xml" title="Get the RSS feed"><span class="tooltip"><i class="fa fa-rss"></i></span></a>
+          <section>&copy; <a href="https://staaaldraad.github.io"></a> 2017 | All rights reserved</section>
+          <section>Theme by <a href="http://www.jrdnbwmn.com">Jordan Bowman</a>. Generated with <a href="http://gohugo.io/">Hugo</a>.</section>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="https://staaaldraad.github.iojs/fittext.js"></script>
+    <script type="text/javascript">
+      $(".heading").fitText();
+    </script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://staaaldraad.github.io/2017/10/23/msword-field-codes/</loc>
+    <lastmod>2017-10-23T15:14:39+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/2017/08/02/o356-phishing-with-oauth/</loc>
+    <lastmod>2017-08-02T15:14:39+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/2017/04/17/nat-to-nat-with-wireguard/</loc>
+    <lastmod>2017-04-17T13:14:39+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/2016/12/11/xxeftp/</loc>
+    <lastmod>2016-12-11T17:14:39+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/2016/12/11/tcpprox/</loc>
+    <lastmod>2016-12-11T16:14:39+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/2016/10/03/powershell-shells/</loc>
+    <lastmod>2016-10-03T15:31:39+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/2015/09/10/proxy-for-websockets/</loc>
+    <lastmod>2015-09-10T14:16:39+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/2015/08/22/abusing-file-converters/</loc>
+    <lastmod>2015-08-22T10:23:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/2015/06/17/huawei-quidway-snmp-and-passwords/</loc>
+    <lastmod>2015-06-17T20:33:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/2015/06/15/silly-mongoshell/</loc>
+    <lastmod>2015-06-15T14:16:39+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/2015/06/14/hipsters-and-data/</loc>
+    <lastmod>2015-06-14T18:23:39+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/categories/databases-security-nosql/</loc>
+    <lastmod>2015-06-14T18:23:39+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/categories/fileformats-security/</loc>
+    <lastmod>2015-08-22T10:23:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/categories/huawei-security-snmp/</loc>
+    <lastmod>2015-06-17T20:33:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/categories/pentest-phishing/</loc>
+    <lastmod>2017-08-02T15:14:39+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/categories/pentest-phishing-dde/</loc>
+    <lastmod>2017-10-23T15:14:39+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/post/</loc>
+    <lastmod>2017-10-23T15:14:39+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/categories/security-mitm-tcp/</loc>
+    <lastmod>2016-12-11T16:14:39+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/categories/security-mongodb/</loc>
+    <lastmod>2015-06-15T14:16:39+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/categories/security-shells-powershell/</loc>
+    <lastmod>2016-10-03T15:31:39+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/categories/security-webapps-html5-websockets/</loc>
+    <lastmod>2015-09-10T14:16:39+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/categories/security-xxe/</loc>
+    <lastmod>2016-12-11T17:14:39+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/</loc>
+    <lastmod>2017-10-23T15:14:39+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/tags/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://staaaldraad.github.io/categories/vpn-infrastructure-research/</loc>
+    <lastmod>2017-04-17T13:14:39+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+</urlset>
