@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Polycom Security Binwalk Rce Hardware on Staaldraad</title>
+    <link>https://staaldraad.github.io/categories/polycom-security-binwalk-rce-hardware/</link>
+    <description>Recent content in Polycom Security Binwalk Rce Hardware on Staaldraad</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 12 Nov 2017 10:29:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://staaldraad.github.io/categories/polycom-security-binwalk-rce-hardware/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Polycom HDX Series RCE</title>
+      <link>https://staaldraad.github.io/2017/11/12/polycom-hdx-rce/</link>
+      <pubDate>Sun, 12 Nov 2017 10:29:00 +0000</pubDate>
+      
+      <guid>https://staaldraad.github.io/2017/11/12/polycom-hdx-rce/</guid>
+      <description>When doing external assessments you spend a decent amount of time footprinting your target and finding possible avenues of attack. Given a large corporate, you are pretty likely to hit video conferencing end-points. This post details a vulnerability in one of these video conferencing systems, the Polycom HDX series.
+I identified this vulnerability while still at SensePost and reported it to Polycom. The vulnerability was acknowledged and we were informed that a patch would be issued.</description>
+    </item>
+    
+  </channel>
+</rss>

