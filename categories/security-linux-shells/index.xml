@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Security Linux Shells on Staaldraad</title>
+    <link>https://staaldraad.github.io/categories/security-linux-shells/</link>
+    <description>Recent content in Security Linux Shells on Staaldraad</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 20 Dec 2017 14:16:39 +0000</lastBuildDate>
+    
+	<atom:link href="https://staaldraad.github.io/categories/security-linux-shells/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>netstat without netstat</title>
+      <link>https://staaldraad.github.io/2017/12/20/netstat-without-netstat/</link>
+      <pubDate>Wed, 20 Dec 2017 14:16:39 +0000</pubDate>
+      
+      <guid>https://staaldraad.github.io/2017/12/20/netstat-without-netstat/</guid>
+      <description>Recently I was doing an assessment in a locked down and restricted environment. One of the first actions you tend to do when landing a shell on a [linux] box is to do some reconnaissance. This is both on host and network, as you want to determine what new access this host has given you. Normally you would run netstat, ifconfig, ip route etc to determine if the compromised host is connected to any other hosts and to determine if there are other network segments you do not know about.</description>
+    </item>
+    
+  </channel>
+</rss>

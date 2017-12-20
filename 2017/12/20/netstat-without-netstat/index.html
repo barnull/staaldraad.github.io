@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js" prefix="og: http://ogp.me/ns#" xmlns:og="http://ogp.me/ns#"><!--<![endif]-->
+
+    <head>
+                <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="author" content="">
+  
+	
+        <meta property="og:site_name" content="Staaldraad">
+        <meta property="og:title" content="Staaldraad">
+        <meta property="og:url" content="https://staaldraad.github.io/2017/12/20/netstat-without-netstat/">
+        <meta property="og:description" content="">
+    
+        <meta property="og:type" content="article" />
+        <meta property="og:article:author" content="" />
+        <meta property="og:article:published_time" content="2017-12-20T14:16:39Z" />
+    
+        <meta name="generator" content="Hugo 0.31-DEV" />
+        <title>netstat without netstat &middot; Staaldraad</title>
+        <link rel="canonical" href="https://staaldraad.github.io/" />
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="">
+        <link rel="stylesheet" type="text/css" href="https://staaldraad.github.io/css/main.css"/>
+        <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300|Montserrat:700" rel="stylesheet" type="text/css">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+        <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    </head>
+
+<body>
+<!--[if lt IE 7]><p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chrome/‎">install Google Chrome</a> to experience this site.</p><![endif]-->
+
+    <header id="site-header">
+        <div class="container">
+            <a href="https://staaldraad.github.io/" alt="Staaldraad"><h1 class="blog-title heading">Staaldraad</h1></a>
+            <p class="blog-description"></p>
+        </div>
+    </header>
+<main class="content" role="main">
+	<div class="container">
+		<article class="post">
+	<header class="post-header">
+        <h3 class="p-post-title">netstat without netstat</h3>
+    </header>
+
+    <section class="post-content">
+        
+
+<p>Recently I was doing an assessment in a locked down and restricted environment. One of the first actions you tend to do when landing a shell on a [linux] box is to do some reconnaissance. This is both on host and network, as you want to determine what new access this host has given you. Normally you would run <code>netstat</code>, <code>ifconfig</code>, <code>ip route</code> etc to determine if the compromised host is connected to any other hosts and to determine if there are other network segments you do not know about.</p>
+
+<p>In this case I ran <code>netstat</code> and immediately got an error back: <code>netstat: command not found</code>. A quick check and nope, it wasn&rsquo;t that the <em>PATH</em> was incorrect, but that <code>netstat</code> was not on the box. That is ok though, we can use <code>lsof</code> and see if there are listening ports. And it turns out <code>lsof</code> is also not available. Since I wasn&rsquo;t root and couldn&rsquo;t install any tools (guess I could have copied a netstat binary across), I decided to find another way to do <code>netstat</code>. Linux is all about file descriptors and there is &lsquo;always&rsquo; a file somewhere containing the information you need.</p>
+
+<p>In this case, if you view <code>/proc/net/tcp</code> you will be able to get information about the current network connections (TCP). The file <code>/proc/net/udp</code> gives you information about UDP connections, and <code>/proc/net/unix</code> about unix sockets. This is probably old news to Linux regulars/grey-beards, but for someone who has always relied on <code>netstat</code> or <code>lsof</code> it was a great discovery.</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat /proc/net/tcp
+ sl  local_address rem_address   st tx_queue rx_queue tr tm-&gt;when retrnsmt   uid  timeout inode                                                     
+   <span style="color:#ae81ff">0</span>: <span style="color:#ae81ff">00000000</span>:006F <span style="color:#ae81ff">00000000</span>:0000 0A <span style="color:#ae81ff">00000000</span>:00000000 <span style="color:#ae81ff">00</span>:00000000 <span style="color:#ae81ff">00000000</span>     <span style="color:#ae81ff">0</span>        <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">15171</span> <span style="color:#ae81ff">1</span> ffff8aa6b3c88800 <span style="color:#ae81ff">100</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">10</span> <span style="color:#ae81ff">0</span>                     
+   <span style="color:#ae81ff">1</span>: 017AA8C0:0035 <span style="color:#ae81ff">00000000</span>:0000 0A <span style="color:#ae81ff">00000000</span>:00000000 <span style="color:#ae81ff">00</span>:00000000 <span style="color:#ae81ff">00000000</span>     <span style="color:#ae81ff">0</span>        <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">34766</span> <span style="color:#ae81ff">1</span> ffff8aa69bdd1000 <span style="color:#ae81ff">100</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">10</span> <span style="color:#ae81ff">0</span>                     
+   <span style="color:#ae81ff">2</span>: 0100007F:0277 <span style="color:#ae81ff">00000000</span>:0000 0A <span style="color:#ae81ff">00000000</span>:00000000 <span style="color:#ae81ff">00</span>:00000000 <span style="color:#ae81ff">00000000</span>     <span style="color:#ae81ff">0</span>        <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">46372</span> <span style="color:#ae81ff">1</span> ffff8aa681653000 <span style="color:#ae81ff">100</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">10</span> <span style="color:#ae81ff">0</span>                     
+   <span style="color:#ae81ff">3</span>: 6501A8C0:9DE0 309C10C7:01BB <span style="color:#ae81ff">01</span> <span style="color:#ae81ff">00000000</span>:00000000 <span style="color:#ae81ff">02</span>:00000012 <span style="color:#ae81ff">00000000</span>  <span style="color:#ae81ff">1000</span>        <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">1235984</span> <span style="color:#ae81ff">2</span> ffff8aa669a05800 <span style="color:#ae81ff">53</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">26</span> <span style="color:#ae81ff">10</span> -1                  
+   <span style="color:#ae81ff">4</span>: 6501A8C0:AE18 872EF468:01BB <span style="color:#ae81ff">01</span> <span style="color:#ae81ff">00000000</span>:00000000 <span style="color:#ae81ff">02</span>:0000025B <span style="color:#ae81ff">00000000</span>  <span style="color:#ae81ff">1000</span>        <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">1221848</span> <span style="color:#ae81ff">2</span> ffff8aa4448b2800 <span style="color:#ae81ff">24</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">28</span> <span style="color:#ae81ff">10</span> -1                  
+   <span style="color:#ae81ff">5</span>: 6501A8C0:DA10 85C06597:01BB <span style="color:#ae81ff">01</span> <span style="color:#ae81ff">00000000</span>:00000000 <span style="color:#ae81ff">02</span>:00000727 <span style="color:#ae81ff">00000000</span>  <span style="color:#ae81ff">1000</span>        <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">1253983</span> <span style="color:#ae81ff">2</span> ffff8aa69da76000 <span style="color:#ae81ff">20</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">10</span> -1                   
+   <span style="color:#ae81ff">6</span>: 6501A8C0:BDFA <span style="color:#ae81ff">85806597</span>:01BB <span style="color:#ae81ff">01</span> <span style="color:#ae81ff">00000000</span>:00000000 <span style="color:#ae81ff">02</span>:00000BF4 <span style="color:#ae81ff">00000000</span>  <span style="color:#ae81ff">1000</span>        <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">1253097</span> <span style="color:#ae81ff">2</span> ffff8aa681652800 <span style="color:#ae81ff">20</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">11</span> <span style="color:#ae81ff">10</span> -1                  
+   <span style="color:#ae81ff">7</span>: 6501A8C0:96B8 <span style="color:#ae81ff">85406597</span>:01BB <span style="color:#ae81ff">01</span> <span style="color:#ae81ff">00000000</span>:00000000 <span style="color:#ae81ff">02</span>:00000727 <span style="color:#ae81ff">00000000</span>  <span style="color:#ae81ff">1000</span>        <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">1253988</span> <span style="color:#ae81ff">2</span> ffff8aa69da71000 <span style="color:#ae81ff">20</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">10</span> <span style="color:#ae81ff">10</span> -1                  
+   <span style="color:#ae81ff">8</span>: 6501A8C0:BDFC <span style="color:#ae81ff">85806597</span>:01BB <span style="color:#ae81ff">01</span> <span style="color:#ae81ff">00000000</span>:00000000 <span style="color:#ae81ff">02</span>:00000BF4 <span style="color:#ae81ff">00000000</span>  <span style="color:#ae81ff">1000</span>        <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">1253098</span> <span style="color:#ae81ff">2</span> ffff8aa681656800 <span style="color:#ae81ff">21</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">10</span> <span style="color:#ae81ff">10</span> -1                  
+   <span style="color:#ae81ff">9</span>: 6501A8C0:CE32 A78722B0:01BB <span style="color:#ae81ff">01</span> <span style="color:#ae81ff">00000000</span>:00000000 <span style="color:#ae81ff">02</span>:00000727 <span style="color:#ae81ff">00000000</span>  <span style="color:#ae81ff">1000</span>        <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">1255776</span> <span style="color:#ae81ff">2</span> ffff8aa669a01000 <span style="color:#ae81ff">26</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">22</span> <span style="color:#ae81ff">10</span> -1                  
+  <span style="color:#ae81ff">10</span>: 6501A8C0:BA08 822AF468:01BB <span style="color:#ae81ff">01</span> <span style="color:#ae81ff">00000000</span>:00000000 <span style="color:#ae81ff">02</span>:000005EA <span style="color:#ae81ff">00000000</span>  <span style="color:#ae81ff">1000</span>        <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">1222742</span> <span style="color:#ae81ff">2</span> ffff8aa669a00800 <span style="color:#ae81ff">22</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">24</span> <span style="color:#ae81ff">10</span> -1                  
+  <span style="color:#ae81ff">11</span>: 6501A8C0:EBB6 827C9836:01BB <span style="color:#ae81ff">01</span> <span style="color:#ae81ff">00000000</span>:00000000 <span style="color:#ae81ff">02</span>:00000248 <span style="color:#ae81ff">00000000</span>  <span style="color:#ae81ff">1000</span>        <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">1239587</span> <span style="color:#ae81ff">2</span> ffff8aa681655800 <span style="color:#ae81ff">31</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">18</span> <span style="color:#ae81ff">10</span> -1                  
+  <span style="color:#ae81ff">12</span>: 6501A8C0:BDF8 <span style="color:#ae81ff">85806597</span>:01BB <span style="color:#ae81ff">01</span> <span style="color:#ae81ff">00000000</span>:00000000 <span style="color:#ae81ff">02</span>:00000BF4 <span style="color:#ae81ff">00000000</span>  <span style="color:#ae81ff">1000</span>        <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">1253096</span> <span style="color:#ae81ff">2</span> ffff8aa681654800 <span style="color:#ae81ff">20</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">22</span> <span style="color:#ae81ff">10</span> -1      
+...</code></pre></div>
+
+<p>The biggest downside here is that addresses and ports are hex encoded and not particularly user friendly (unless you do all your network addressing in hex). Enter <code>awk</code>, a swiss army knife for processing files/text.</p>
+
+<p>The first thing I wanted was a list of all remote hosts that this host connects to, or are connected to this host. For this I needed to parse the <em>rem_address</em> column. A bit of messing around with <code>awk</code> on my localhost and I came up with the following:</p>
+
+<p><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">grep -v <span style="color:#e6db74">&#34;rem_address&#34;</span> /proc/net/tcp  | awk  <span style="color:#e6db74">&#39;{x=strtonum(&#34;0x&#34;substr($3,index($3,&#34;:&#34;)-2,2)); for (i=5; i&gt;0; i-=2) x = x&#34;.&#34;strtonum(&#34;0x&#34;substr($3,i,2))}{print x&#34;:&#34;strtonum(&#34;0x&#34;substr($3,index($3,&#34;:&#34;)+1,4))}&#39;</span></code></pre></div></p>
+
+<p>Which will give you the following output:</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ae81ff">0</span>.0.0.0:0
+<span style="color:#ae81ff">0</span>.0.0.0:0
+<span style="color:#ae81ff">0</span>.0.0.0:0
+<span style="color:#ae81ff">216</span>.58.210.170:443
+<span style="color:#ae81ff">199</span>.16.156.48:443
+<span style="color:#ae81ff">104</span>.244.46.135:443
+<span style="color:#ae81ff">151</span>.101.192.133:443
+<span style="color:#ae81ff">151</span>.101.128.133:443
+...</code></pre></div>
+
+<p>Much better! I ran it on the remote host and it failed&hellip; Darn, it turns out my <code>awk</code> above is for <code>gawk</code> (GNU Awk) and functions like <code>strtonum</code> aren&rsquo;t available in standard <code>awk</code>. Back to the drawing board and some more <code>awk</code> was born, in this version I define a new function, <code>hextodec</code> which does the same as <code>strtonum</code>.</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">grep -v <span style="color:#e6db74">&#34;rem_address&#34;</span> /proc/net/tcp  | awk <span style="color:#e6db74">&#39;function hextodec(str,ret,n,i,k,c){
+</span><span style="color:#e6db74">    ret = 0
+</span><span style="color:#e6db74">    n = length(str)
+</span><span style="color:#e6db74">    for (i = 1; i &lt;= n; i++) {
+</span><span style="color:#e6db74">        c = tolower(substr(str, i, 1))
+</span><span style="color:#e6db74">        k = index(&#34;123456789abcdef&#34;, c)
+</span><span style="color:#e6db74">        ret = ret * 16 + k
+</span><span style="color:#e6db74">    }
+</span><span style="color:#e6db74">    return ret
+</span><span style="color:#e6db74">} {x=hextodec(substr($2,index($2,&#34;:&#34;)-2,2)); for (i=5; i&gt;0; i-=2) x = x&#34;.&#34;hextodec(substr($2,i,2))}{print x&#34;:&#34;hextodec(substr($2,index($2,&#34;:&#34;)+1,4))}&#39;</span></code></pre></div>
+
+<p>Great success! This worked brilliantly and I got much needed insight into the network. To get information about the local ports, for example which ports are we listening on, we parse the <em>local_address</em> column, so replace <code>$2</code> with <code>$1</code> throughout the script and you&rsquo;ll get the correct output.</p>
+
+<h2 id="nice-but-how-about-an-all-in-one-solution">Nice, but how about an all-in-one solution?</h2>
+
+<p>This was great, but I got annoyed having to match the output from <em>rem_address</em> and <em>local_address</em>. Being a sucker for punishment I decided to try and do it all in <code>awk</code>. So no pipelining commands, just one long <code>awk</code> function.</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">awk <span style="color:#e6db74">&#39;function hextodec(str,ret,n,i,k,c){
+</span><span style="color:#e6db74">    ret = 0
+</span><span style="color:#e6db74">    n = length(str)
+</span><span style="color:#e6db74">    for (i = 1; i &lt;= n; i++) {
+</span><span style="color:#e6db74">        c = tolower(substr(str, i, 1))
+</span><span style="color:#e6db74">        k = index(&#34;123456789abcdef&#34;, c)
+</span><span style="color:#e6db74">        ret = ret * 16 + k
+</span><span style="color:#e6db74">    }
+</span><span style="color:#e6db74">    return ret
+</span><span style="color:#e6db74">}
+</span><span style="color:#e6db74">function getIP(str,ret){
+</span><span style="color:#e6db74">    ret=hextodec(substr(str,index(str,&#34;:&#34;)-2,2)); 
+</span><span style="color:#e6db74">    for (i=5; i&gt;0; i-=2) {
+</span><span style="color:#e6db74">        ret = ret&#34;.&#34;hextodec(substr(str,i,2))
+</span><span style="color:#e6db74">    }
+</span><span style="color:#e6db74">    ret = ret&#34;:&#34;hextodec(substr(str,index(str,&#34;:&#34;)+1,4))
+</span><span style="color:#e6db74">    return ret
+</span><span style="color:#e6db74">} 
+</span><span style="color:#e6db74">NR &gt; 1 {{if(NR==2)print &#34;Local - Remote&#34;;local=getIP($2);remote=getIP($3)}{print local&#34; - &#34;remote}}&#39;</span> /proc/net/tcp </code></pre></div>
+
+<p>This is the raw <code>awk</code> version, so it will work in both <code>awk</code> and <code>gawk</code>. When running this, you will get output similar to <code>netstat</code>, it is still up to you to figure out which are &lsquo;listening&rsquo; connections and which are outgoing. This should be relatively straight forward, anything connecting to a remote of 0.0.0.0:0 is a listening port. Or since listening connections tend to be on the low-range ports, and outgoing connections will be a high-range port connecting to a low-range port.</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Local - Remote
+<span style="color:#ae81ff">0</span>.0.0.0:111 - <span style="color:#ae81ff">0</span>.0.0.0:0
+<span style="color:#ae81ff">192</span>.168.122.1:53 - <span style="color:#ae81ff">0</span>.0.0.0:0
+<span style="color:#ae81ff">127</span>.0.0.1:631 - <span style="color:#ae81ff">0</span>.0.0.0:0
+<span style="color:#ae81ff">192</span>.168.1.101:40416 - <span style="color:#ae81ff">199</span>.16.156.48:443
+<span style="color:#ae81ff">192</span>.168.1.101:44568 - <span style="color:#ae81ff">104</span>.244.46.135:443
+<span style="color:#ae81ff">192</span>.168.1.101:54108 - <span style="color:#ae81ff">151</span>.101.65.69:443
+<span style="color:#ae81ff">192</span>.168.1.101:47624 - <span style="color:#ae81ff">104</span>.244.42.130:443
+<span style="color:#ae81ff">192</span>.168.1.101:34728 - <span style="color:#ae81ff">104</span>.16.110.18:443
+<span style="color:#ae81ff">192</span>.168.1.101:60342 - <span style="color:#ae81ff">54</span>.152.124.130:443
+...</code></pre></div>
+
+<h2 id="success-what-else-can-we-do">Success - what else can we do?</h2>
+
+<p>This was great, I could now do some network recon and had some go to scripts for the next time this happens. You can also parse various other files in <code>/proc/net</code> such as <code>/unix</code>,<code>/arp</code>,<code>/route</code> to get unix sockets, the arp table and the route table respectively. The route table needs the same hex to dotted notation translation as the <code>/tcp</code> and <code>/udp</code> files. It also got me thinking, could we do this for all the common <em>hacker</em> commands (actually just admin commands), that we run when first compromising a box? The thinking being that monitoring may be setup for instances of <code>id</code>, <code>netstat</code>, <code>ifconfig</code> etc being run. If we run one of those, we would be alerting our target that they have just been popped. Unless of course they are <a href="https://boingboing.net/2017/10/01/30-web-shells.html">Equifax</a>.</p>
+
+<p>My first attempt at this was a tame copy of the <code>id</code> command. In this case we query the <code>/proc/self/status</code> file to find out which user we are running as.</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">awk -F: <span style="color:#e6db74">&#39;END {print &#34;uid:&#34;u&#34; gid:&#34;g&#34; groups:&#34;gg}{if($1==&#34;Uid&#34;){split($2,a,&#34; &#34;);u=a[1]}if($1==&#34;Gid&#34;){split($2,a,&#34; &#34;);g=a[1]}if($1==&#34;Groups&#34;){gg=$2}}&#39;</span> /proc/self/status</code></pre></div>
+
+<p>The output is pretty rudimentary and I&rsquo;m sure this can still be improved, but I was trying to avoid the common action of <code>cat /etc/passwd</code> (or reading /etc/passwd in any other way):</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">uid:1000 gid:1000 groups:       <span style="color:#ae81ff">10</span> <span style="color:#ae81ff">1000</span> <span style="color:#ae81ff">1001</span></code></pre></div>
+
+<h1 id="scripts">Scripts</h1>
+
+<p>I&rsquo;ve hosted all versions of the <code>netstat</code> awk script as well as the <code>id</code> script on gist.gitlab.com:</p>
+
+<ul>
+<li>netstat - <a href="https://gist.github.com/staaldraad/4c4c80800ce15b6bef1c1186eaa8da9f">https://gist.github.com/staaldraad/4c4c80800ce15b6bef1c1186eaa8da9f</a></li>
+<li>id - <a href="https://gist.github.com/staaldraad/640b22ac11f8f37872cdddf7c4bdf11f">https://gist.github.com/staaldraad/640b22ac11f8f37872cdddf7c4bdf11f</a></li>
+</ul>
+
+<p>In time I&rsquo;ll hopefully add a few more of these. If you got some go to scripts that help you avoid detection or accomplish the same but in a better way, please let me know!</p>
+
+    </section>
+
+    <hr>
+
+    <footer class="post-footer">
+        <section class="f-1">
+            
+            
+            <p class="f-post-time"><time datetime="2017-12-20T14:16:39Z">December 20, 2017</time></p>
+        </section>
+                        
+        <section class="f-2">
+            <section class="share">
+                <span>Share:
+                <a class="icon-twitter" href="http://twitter.com/share?text=netstat%20without%20netstat&url=https%3a%2f%2fstaaldraad.github.io%2f2017%2f12%2f20%2fnetstat-without-netstat%2f"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="fa fa-twitter"></i>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fstaaldraad.github.io%2f2017%2f12%2f20%2fnetstat-without-netstat%2f"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="fa fa-facebook"></i>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https%3a%2f%2fstaaldraad.github.io%2f2017%2f12%2f20%2fnetstat-without-netstat%2f"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="fa fa-google-plus"></i>
+                </a>
+                </span>
+            </section>
+
+            
+        </section>
+                        
+    </footer>
+</article>
+	</div>
+</main>
+    <footer id="site-footer">
+        <div class="container">
+          
+          
+          
+          
+          <a href="https://staaldraad.github.io/index.xml" title="Get the RSS feed"><span class="tooltip"><i class="fa fa-rss"></i></span></a>
+          <section>&copy; <a href="https://staaldraad.github.io/"></a> 2017 | All rights reserved</section>
+          <section>Theme by <a href="http://www.jrdnbwmn.com">Jordan Bowman</a>. Generated with <a href="http://gohugo.io/">Hugo</a>.</section>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="https://staaldraad.github.io/js/fittext.js"></script>
+    <script type="text/javascript">
+      $(".heading").fitText();
+    </script>
+
+
+
+</body>
+</html>
