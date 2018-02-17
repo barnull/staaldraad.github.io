@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://staaldraad.github.io/post/2018-02-17-crossposts/</loc>
+    <lastmod>2018-02-17T10:16:39+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://staaldraad.github.io/2017/12/20/netstat-without-netstat/</loc>
     <lastmod>2017-12-20T14:16:39+00:00</lastmod>
   </url>
@@ -110,7 +115,13 @@
   
   <url>
     <loc>https://staaldraad.github.io/post/</loc>
-    <lastmod>2017-12-20T14:16:39+00:00</lastmod>
+    <lastmod>2018-02-17T10:16:39+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://staaldraad.github.io/categories/security/</loc>
+    <lastmod>2018-02-17T10:16:39+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -152,7 +163,7 @@
   
   <url>
     <loc>https://staaldraad.github.io/</loc>
-    <lastmod>2017-12-20T14:16:39+00:00</lastmod>
+    <lastmod>2018-02-17T10:16:39+00:00</lastmod>
     <priority>0</priority>
   </url>
   

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Security on Staaldraad</title>
+    <link>https://staaldraad.github.io/categories/security/</link>
+    <description>Recent content in Security on Staaldraad</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 17 Feb 2018 10:16:39 +0000</lastBuildDate>
+    
+	<atom:link href="https://staaldraad.github.io/categories/security/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Cross Posting - Other Blog Posts</title>
+      <link>https://staaldraad.github.io/post/2018-02-17-crossposts/</link>
+      <pubDate>Sat, 17 Feb 2018 10:16:39 +0000</pubDate>
+      
+      <guid>https://staaldraad.github.io/post/2018-02-17-crossposts/</guid>
+      <description>&lt;p&gt;Before creating this blog, I had the opportunity to posts numerous blogs under &lt;a href=&#34;https://sensepost.com&#34;&gt;SensePost&lt;/a&gt;. These cover a few topics including mobile apps, web apps and infrastructure.
+
+Here is a list of those posts, in chronological order, with a brief abstract about each post.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
