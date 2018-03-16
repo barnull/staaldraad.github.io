@@ -6,10 +6,21 @@
     <description>Recent content in Posts on Staaldraad</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 17 Feb 2018 10:16:39 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 16 Mar 2018 17:10:39 +0000</lastBuildDate>
     
 	<atom:link href="https://staaldraad.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Quick win with GraphQL</title>
+      <link>https://staaldraad.github.io/post/2018-03-16-quick-win-with-graphql/</link>
+      <pubDate>Fri, 16 Mar 2018 17:10:39 +0000</pubDate>
+      
+      <guid>https://staaldraad.github.io/post/2018-03-16-quick-win-with-graphql/</guid>
+      <description>&amp;ldquo;GraphQL is a query language for APIs and a runtime for fulfilling those queries with your existing data&amp;rdquo; - graphql.org
+ The GraphQL query language allows developers to easily write front-end queries, using a JSON like syntax, to retrieve data from the back-end. The big plus here that a single API end-point can return multiple types and formats of data based on the contents of the query.
+This simplicity has resulted in a steady adaption of GraphQL.</description>
+    </item>
     
     <item>
       <title>Cross Posting - Other Blog Posts</title>
