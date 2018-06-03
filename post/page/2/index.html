@@ -53,6 +53,54 @@
 	
 		<article class="li post">
     <header class="post-header">
+        <h3 class="post-title"><a href="https://staaldraad.github.io/2016/12/11/xxeftp/">XXE FTP Server - A {web,ftp}-server for XXE</a></h3>
+        <p class="post-time"><time datetime="2016-12-11T17:14:39Z">December 11, 2016</time></p>
+    </header>
+    
+    <section class="post-excerpt">
+        <p>XXE - FTP OoB basics XXE offers a great attack avenue for reading files from a vulnerable web-app. One of my favourite XXE attacks involves protocol handler abuse, where you use FTP to do an out of band read. This is useful in those cases where you have XXE but it is blind. Unlike the normal OoB retreival through HTTP, FTP works with newer versions of Java (&gt;1.7) and there are fewer characters which break the retrieval.</p>
+        
+        
+        <div>
+          <a href="/2016/12/11/xxeftp/">Read More…</a>
+        </div>
+        
+    </section>
+
+    <footer class="post-footer">
+        <span>
+            
+            
+        </span>
+    </footer>
+</article>
+	
+		<article class="li post">
+    <header class="post-header">
+        <h3 class="post-title"><a href="https://staaldraad.github.io/2016/12/11/tcpprox/">tcpprox - An intercepting TCP proxy</a></h3>
+        <p class="post-time"><time datetime="2016-12-11T16:14:39Z">December 11, 2016</time></p>
+    </header>
+    
+    <section class="post-excerpt">
+        <p>On numerous occasions I&rsquo;ve run into custom binary network protocols that I&rsquo;ve wanted to reverse. The usual goto here is to fireup wireshark/tcpdump and view the traffic as it goes accross the wire. This works really well in most cases, but how about traffic that uses TLS to encrypt the traffic? Unless you have the private key for the server, you are stuck with viewing encrypted traffic in wireshark. Not ideal for reverse engineering.</p>
+        
+        
+        <div>
+          <a href="/2016/12/11/tcpprox/">Read More…</a>
+        </div>
+        
+    </section>
+
+    <footer class="post-footer">
+        <span>
+            
+            
+        </span>
+    </footer>
+</article>
+	
+		<article class="li post">
+    <header class="post-header">
         <h3 class="post-title"><a href="https://staaldraad.github.io/2016/10/03/powershell-shells/">Powershell Shells</a></h3>
         <p class="post-time"><time datetime="2016-10-03T15:31:39Z">October 3, 2016</time></p>
     </header>
@@ -60,6 +108,12 @@
     <section class="post-excerpt">
         <p>It&rsquo;s been a while&hellip; I figured it&rsquo;s about time I post something here again.
 A while back I was required to see how much damage can be done by a malicious staff member. The one caveat here was that I had to test directly from the Windows box and had extremely limited outbound comms. For various reasons the usual tool-suites were out and I took this as a challenge to see how much damage I could do by coding tools on the &ldquo;employee machine&rdquo;.</p>
+        
+        
+        <div>
+          <a href="/2016/10/03/powershell-shells/">Read More…</a>
+        </div>
+        
     </section>
 
     <footer class="post-footer">
@@ -79,6 +133,12 @@ A while back I was required to see how much damage can be done by a malicious st
     <section class="post-excerpt">
         <p>A few assessments back I ran into a web app that made libral use of websockets. Now it&rsquo;s been a while since encountering an app that makes use of websockets for such a large portion of it&rsquo;s content and I&rsquo;d forgotten what a PITA it can be trying to intercept and replay websocket requests.
 Seeing as it was a web app assessment I naturally turned to trusty Burp Suite Pro. Burp has supported websockets for a long while now, but far as I could find, this support only allowed you to intercept websocket requests and view/modify them.</p>
+        
+        
+        <div>
+          <a href="/2015/09/10/proxy-for-websockets/">Read More…</a>
+        </div>
+        
     </section>
 
     <footer class="post-footer">
@@ -97,6 +157,12 @@ Seeing as it was a web app assessment I naturally turned to trusty Burp Suite Pr
     
     <section class="post-excerpt">
         <p>Every now and then you run into a new file format and you find that you may not have a tool to parse that file. Or you are looking for an easy to use solution for you mom to access the photo&rsquo;s you sent her in a .tar archive. This is where file conversion services come in, a quick Google for &ldquo;online file converter&rdquo; will yield multiple results. One thing to keep in mind when converting files, is that different file formats may support different features.</p>
+        
+        
+        <div>
+          <a href="/2015/08/22/abusing-file-converters/">Read More…</a>
+        </div>
+        
     </section>
 
     <footer class="post-footer">
@@ -115,6 +181,12 @@ Seeing as it was a web app assessment I naturally turned to trusty Burp Suite Pr
     
     <section class="post-excerpt">
         <p>In the past our favourite hardware vendor to pick on was Cisco these days however, there is a new kid on the block - Huawei. We all know about the dangers of SNMP and default community strings, think Cisco and tftp. Seems like Huawei suffers from similar fail. Like all routers, switches, servers, ect out there, Huawei devices can be managed through SNMP. And just like other devices in the wild, SNMP is mostly configured with the community strings public and private as defaults.</p>
+        
+        
+        <div>
+          <a href="/2015/06/17/huawei-quidway-snmp-and-passwords/">Read More…</a>
+        </div>
+        
     </section>
 
     <footer class="post-footer">
@@ -133,6 +205,12 @@ Seeing as it was a web app assessment I naturally turned to trusty Burp Suite Pr
     
     <section class="post-excerpt">
         <p>Mongo provides a native shell for interacting with local and remote MongoDB instances. In rare cases you may find that a user&rsquo;s logon shell has been replaced with this Mongo shell, this could happen when there is a shared machine where you want developers/admins to access the database but not have native access to the host. Everytime the user logs in, they hit the mongo shell, can execute mongo db commands and thats it.</p>
+        
+        
+        <div>
+          <a href="/2015/06/15/silly-mongoshell/">Read More…</a>
+        </div>
+        
     </section>
 
     <footer class="post-footer">
@@ -153,6 +231,12 @@ Seeing as it was a web app assessment I naturally turned to trusty Burp Suite Pr
         <p>A while back I spent some time playing with the “modern” database implementations, more affectionately known as hipster tech. These are mostly your so-called NoSQL, big-data, ect databases. Trying to interact with these databases required numerous scripts to be written, one for each database implementation. After chatting to @PaulWebSec I decided to merge these into a single tool. Thus HippyDB Tool was born.
 The following databases are supported:
  Aerospike Cassandra Hbase Hive Memcached Mongodb Redis Riak  A quick scan of AWS and Google Cloud hosting showed that the vast majority of these databases are deployed on default ports, listening on all interfaces and most critically, without any authentication.</p>
+        
+        
+        <div>
+          <a href="/2015/06/14/hipsters-and-data/">Read More…</a>
+        </div>
+        
     </section>
 
     <footer class="post-footer">

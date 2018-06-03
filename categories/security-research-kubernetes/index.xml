@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Security Research Kubernetes on Staaldraad</title>
+    <link>https://staaldraad.github.io/categories/security-research-kubernetes/</link>
+    <description>Recent content in Security Research Kubernetes on Staaldraad</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 03 Jun 2018 09:16:39 +0000</lastBuildDate>
+    
+	<atom:link href="https://staaldraad.github.io/categories/security-research-kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Getting root on a Kubernetes node through with gitRepo and CVE-2018-11235</title>
+      <link>https://staaldraad.github.io/post/2018-06-03-kubernetes-root-with-gitrepo-volume/</link>
+      <pubDate>Sun, 03 Jun 2018 09:16:39 +0000</pubDate>
+      
+      <guid>https://staaldraad.github.io/post/2018-06-03-kubernetes-root-with-gitrepo-volume/</guid>
+      <description>&lt;p&gt;Shortly after the recent &lt;a href=&#34;https://staaldraad.github.io/post/2018-06-04-cve-2018-11235-git-rce&#34;&gt;Git vulnerability&lt;/a&gt; was announced, a &lt;a href=&#34;https://groups.google.com/forum/#!msg/kubernetes-security-announce/ayqL4LiUcV4/09HL6e11AgAJ&#34;&gt;security advisory&lt;/a&gt; for Kubernetes was published.
+&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -53,6 +53,55 @@
 	
 		<article class="li post">
     <header class="post-header">
+        <h3 class="post-title"><a href="https://staaldraad.github.io/post/2018-06-03-kubernetes-root-with-gitrepo-volume/">Getting root on a Kubernetes node through with gitRepo and CVE-2018-11235</a></h3>
+        <p class="post-time"><time datetime="2018-06-03T09:16:39Z">June 3, 2018</time></p>
+    </header>
+    
+    <section class="post-excerpt">
+        <p><p>Shortly after the recent <a href="/post/2018-06-04-cve-2018-11235-git-rce">Git vulnerability</a> was announced, a <a href="https://groups.google.com/forum/#!msg/kubernetes-security-announce/ayqL4LiUcV4/09HL6e11AgAJ">security advisory</a> for Kubernetes was published.
+</p></p>
+        
+        
+        <div>
+          <a href="/post/2018-06-03-kubernetes-root-with-gitrepo-volume/">Read More…</a>
+        </div>
+        
+    </section>
+
+    <footer class="post-footer">
+        <span>
+            
+            
+        </span>
+    </footer>
+</article>
+	
+		<article class="li post">
+    <header class="post-header">
+        <h3 class="post-title"><a href="https://staaldraad.github.io/post/2018-06-03-cve-2018-11235-git-rce/">CVE-2018-11235 git RCE</a></h3>
+        <p class="post-time"><time datetime="2018-06-03T08:10:39Z">June 3, 2018</time></p>
+    </header>
+    
+    <section class="post-excerpt">
+        <p>Recently I was working on a git repository that contained numerous submodules. At this point I realised that I did not know how submodules worked and decided to dive into the submodule system to gain a better understanding. During this process of discovery I came across a vulnerability in the submodule system, which lead to Remote Code Execution (RCE) in git when a submodule was initialised. This allowed for reliable exploitation of the host that was cloning my malicious repository, and ultimately gave me RCE in GitHub Pages and CVE-2018-11235 for git.</p>
+        
+        
+        <div>
+          <a href="/post/2018-06-03-cve-2018-11235-git-rce/">Read More…</a>
+        </div>
+        
+    </section>
+
+    <footer class="post-footer">
+        <span>
+            
+            
+        </span>
+    </footer>
+</article>
+	
+		<article class="li post">
+    <header class="post-header">
         <h3 class="post-title"><a href="https://staaldraad.github.io/post/2018-06-01-cve-2017-17405-Ruby-RCE/">CVE-2017-17405 RCE in Ruby&#39;s FTP lib</a></h3>
         <p class="post-time"><time datetime="2018-06-01T09:16:39Z">June 1, 2018</time></p>
     </header>
@@ -61,6 +110,12 @@
         <p><p>The FTP library in Ruby did not validate remote filenames and blindly passed these to the <code>kernel.open</code> function. This created a remotely exploitable vulnerability. Since the filenames were supplied by the remote FTP server, it was possible to create a malicious server that could exploit this vulnerability when a vulnerable Ruby client connected and tried to download a file.
 
 This was assigned <a href="https://www.ruby-lang.org/en/news/2017/12/14/net-ftp-command-injection-cve-2017-17405/">CVE-2017-17405</a> and patched by the Ruby team on 14 December 2017.</p></p>
+        
+        
+        <div>
+          <a href="/post/2018-06-01-cve-2017-17405-Ruby-RCE/">Read More…</a>
+        </div>
+        
     </section>
 
     <footer class="post-footer">
@@ -81,6 +136,12 @@ This was assigned <a href="https://www.ruby-lang.org/en/news/2017/12/14/net-ftp-
         <p>&ldquo;GraphQL is a query language for APIs and a runtime for fulfilling those queries with your existing data&rdquo; - graphql.org
  The GraphQL query language allows developers to easily write front-end queries, using a JSON like syntax, to retrieve data from the back-end. The big plus here that a single API end-point can return multiple types and formats of data based on the contents of the query.
 This simplicity has resulted in a steady adaption of GraphQL.</p>
+        
+        
+        <div>
+          <a href="/post/2018-03-16-quick-win-with-graphql/">Read More…</a>
+        </div>
+        
     </section>
 
     <footer class="post-footer">
@@ -101,6 +162,12 @@ This simplicity has resulted in a steady adaption of GraphQL.</p>
         <p><p>Before creating this blog, I had the opportunity to create numerous posts under the <a href="https://sensepost.com">SensePost blog</a>. These cover a few topics including mobile apps, web apps and infrastructure.
 
 Here is a list of those posts, in chronological order, with a brief abstract about each post.</p></p>
+        
+        
+        <div>
+          <a href="/post/2018-02-17-crossposts/">Read More…</a>
+        </div>
+        
     </section>
 
     <footer class="post-footer">
@@ -119,6 +186,12 @@ Here is a list of those posts, in chronological order, with a brief abstract abo
     
     <section class="post-excerpt">
         <p>Recently I was doing an assessment in a locked down and restricted environment. One of the first actions you tend to do when landing a shell on a [linux] box is to do some reconnaissance. This is both on host and network, as you want to determine what new access this host has given you. Normally you would run netstat, ifconfig, ip route etc to determine if the compromised host is connected to any other hosts and to determine if there are other network segments you do not know about.</p>
+        
+        
+        <div>
+          <a href="/2017/12/20/netstat-without-netstat/">Read More…</a>
+        </div>
+        
     </section>
 
     <footer class="post-footer">
@@ -138,6 +211,12 @@ Here is a list of those posts, in chronological order, with a brief abstract abo
     <section class="post-excerpt">
         <p>When doing external assessments you spend a decent amount of time footprinting your target and finding possible avenues of attack. Given a large corporate, you are pretty likely to hit video conferencing end-points. This post details a vulnerability in one of these video conferencing systems, the Polycom HDX series.
 I identified this vulnerability while still at SensePost and reported it to Polycom. The vulnerability was acknowledged and we were informed that a patch would be issued.</p>
+        
+        
+        <div>
+          <a href="/2017/11/12/polycom-hdx-rce/">Read More…</a>
+        </div>
+        
     </section>
 
     <footer class="post-footer">
@@ -156,6 +235,12 @@ I identified this vulnerability while still at SensePost and reported it to Poly
     
     <section class="post-excerpt">
         <p>A few weeks back Saif El-Sherei and I posted on the SensePost blog about DDE and getting command exec in MSWord without macros. This post got way more attention than we initially expected it would. Since then DDE has been used in phishing and malware campaigns, as well as legitimate red-team engagements. With the rapid rise in attacks using DDE, detection has been stepped up and most AV engines have basic DDE detection built in.</p>
+        
+        
+        <div>
+          <a href="/2017/10/23/msword-field-codes/">Read More…</a>
+        </div>
+        
     </section>
 
     <footer class="post-footer">
@@ -174,6 +259,12 @@ I identified this vulnerability while still at SensePost and reported it to Poly
     
     <section class="post-excerpt">
         <p>Typically phishing has provided a low tech approach to getting access to credentials and services. The mainfocus up until now has been on getting username&amp;passwords or tricking users into executing code. Subsequently, user awareness has gone up and users are better at identifying suspicious pages. Experience has shown that the click-through rate on emails have remained high, while users have been (slightly) less likely to enter credentials and more likely to report the phishing page.</p>
+        
+        
+        <div>
+          <a href="/2017/08/02/o356-phishing-with-oauth/">Read More…</a>
+        </div>
+        
     </section>
 
     <footer class="post-footer">
@@ -192,42 +283,12 @@ I identified this vulnerability while still at SensePost and reported it to Poly
     
     <section class="post-excerpt">
         <p>A recent research project/idea required me to look into setting up a NAT-to-NAT VPN. The basic idea being that two NATed networks are able to communicate through a VPN and share resources. While researching possible VPN solutions, I remembered reading about WireGuard a new VPN that aims to be fast, secure and lightweight. This seemed like the perfect opportunity to both try out a new VPN implementation and accomplish the goals of the research project.</p>
-    </section>
-
-    <footer class="post-footer">
-        <span>
-            
-            
-        </span>
-    </footer>
-</article>
-	
-		<article class="li post">
-    <header class="post-header">
-        <h3 class="post-title"><a href="https://staaldraad.github.io/2016/12/11/xxeftp/">XXE FTP Server - A {web,ftp}-server for XXE</a></h3>
-        <p class="post-time"><time datetime="2016-12-11T17:14:39Z">December 11, 2016</time></p>
-    </header>
-    
-    <section class="post-excerpt">
-        <p>XXE - FTP OoB basics XXE offers a great attack avenue for reading files from a vulnerable web-app. One of my favourite XXE attacks involves protocol handler abuse, where you use FTP to do an out of band read. This is useful in those cases where you have XXE but it is blind. Unlike the normal OoB retreival through HTTP, FTP works with newer versions of Java (&gt;1.7) and there are fewer characters which break the retrieval.</p>
-    </section>
-
-    <footer class="post-footer">
-        <span>
-            
-            
-        </span>
-    </footer>
-</article>
-	
-		<article class="li post">
-    <header class="post-header">
-        <h3 class="post-title"><a href="https://staaldraad.github.io/2016/12/11/tcpprox/">tcpprox - An intercepting TCP proxy</a></h3>
-        <p class="post-time"><time datetime="2016-12-11T16:14:39Z">December 11, 2016</time></p>
-    </header>
-    
-    <section class="post-excerpt">
-        <p>On numerous occasions I&rsquo;ve run into custom binary network protocols that I&rsquo;ve wanted to reverse. The usual goto here is to fireup wireshark/tcpdump and view the traffic as it goes accross the wire. This works really well in most cases, but how about traffic that uses TLS to encrypt the traffic? Unless you have the private key for the server, you are stuck with viewing encrypted traffic in wireshark. Not ideal for reverse engineering.</p>
+        
+        
+        <div>
+          <a href="/2017/04/17/nat-to-nat-with-wireguard/">Read More…</a>
+        </div>
+        
     </section>
 
     <footer class="post-footer">
