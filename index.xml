@@ -6,13 +6,23 @@
     <description>Recent content on Staaldraad</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 03 Jun 2018 09:16:39 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 19 Sep 2018 19:16:39 +0000</lastBuildDate>
     
 	<atom:link href="https://staaldraad.github.io/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Getting root on a Kubernetes node through with gitRepo and CVE-2018-11235</title>
+      <title>Dockerfile for creating a git repository to serve CVE-2018-11235</title>
+      <link>https://staaldraad.github.io/post/2018-09-04-dockerfile-for-git-rce-repo/</link>
+      <pubDate>Wed, 19 Sep 2018 19:16:39 +0000</pubDate>
+      
+      <guid>https://staaldraad.github.io/post/2018-09-04-dockerfile-for-git-rce-repo/</guid>
+      <description>&lt;p&gt;It has been a while since the &lt;a href=&#34;https://staaldraad.github.io/post/2018-06-04-cve-2018-11235-git-rce&#34;&gt;Git vulnerability&lt;/a&gt; was announced. The major public repository providers have long since been preventing hosting repositories serving CVE-2018-11235.
+&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Getting root on a Kubernetes node with gitRepo and CVE-2018-11235</title>
       <link>https://staaldraad.github.io/post/2018-06-03-kubernetes-root-with-gitrepo-volume/</link>
       <pubDate>Sun, 03 Jun 2018 09:16:39 +0000</pubDate>
       

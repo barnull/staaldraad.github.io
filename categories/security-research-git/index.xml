@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Security Research Git on Staaldraad</title>
+    <link>https://staaldraad.github.io/categories/security-research-git/</link>
+    <description>Recent content in Security Research Git on Staaldraad</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 19 Sep 2018 19:16:39 +0000</lastBuildDate>
+    
+	<atom:link href="https://staaldraad.github.io/categories/security-research-git/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Dockerfile for creating a git repository to serve CVE-2018-11235</title>
+      <link>https://staaldraad.github.io/post/2018-09-04-dockerfile-for-git-rce-repo/</link>
+      <pubDate>Wed, 19 Sep 2018 19:16:39 +0000</pubDate>
+      
+      <guid>https://staaldraad.github.io/post/2018-09-04-dockerfile-for-git-rce-repo/</guid>
+      <description>&lt;p&gt;It has been a while since the &lt;a href=&#34;https://staaldraad.github.io/post/2018-06-04-cve-2018-11235-git-rce&#34;&gt;Git vulnerability&lt;/a&gt; was announced. The major public repository providers have long since been preventing hosting repositories serving CVE-2018-11235.
+&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -12,7 +12,7 @@
     
     
     <item>
-      <title>Getting root on a Kubernetes node through with gitRepo and CVE-2018-11235</title>
+      <title>Getting root on a Kubernetes node with gitRepo and CVE-2018-11235</title>
       <link>https://staaldraad.github.io/post/2018-06-03-kubernetes-root-with-gitrepo-volume/</link>
       <pubDate>Sun, 03 Jun 2018 09:16:39 +0000</pubDate>
       

@@ -24,7 +24,7 @@
         <meta property="og:article:author" content="" />
         <meta property="og:article:published_time" content="2017-12-20T14:16:39Z" />
     
-        <meta name="generator" content="Hugo 0.31-DEV" />
+        <meta name="generator" content="Hugo 0.48" />
         <title>netstat without netstat &middot; Staaldraad</title>
         <link rel="canonical" href="https://staaldraad.github.io/" />
         <link rel="alternate" type="application/rss+xml" title="RSS" href="">
@@ -88,7 +88,7 @@
 
 <p>The first thing I wanted was a list of all remote hosts that this host connects to, or are connected to this host. For this I needed to parse the <em>rem_address</em> column. A bit of messing around with <code>awk</code> on my localhost and I came up with the following:</p>
 
-<p><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">grep -v <span style="color:#e6db74">&#34;rem_address&#34;</span> /proc/net/tcp  | awk  <span style="color:#e6db74">&#39;{x=strtonum(&#34;0x&#34;substr($3,index($3,&#34;:&#34;)-2,2)); for (i=5; i&gt;0; i-=2) x = x&#34;.&#34;strtonum(&#34;0x&#34;substr($3,i,2))}{print x&#34;:&#34;strtonum(&#34;0x&#34;substr($3,index($3,&#34;:&#34;)+1,4))}&#39;</span></code></pre></div></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">grep -v <span style="color:#e6db74">&#34;rem_address&#34;</span> /proc/net/tcp  | awk  <span style="color:#e6db74">&#39;{x=strtonum(&#34;0x&#34;substr($3,index($3,&#34;:&#34;)-2,2)); for (i=5; i&gt;0; i-=2) x = x&#34;.&#34;strtonum(&#34;0x&#34;substr($3,i,2))}{print x&#34;:&#34;strtonum(&#34;0x&#34;substr($3,index($3,&#34;:&#34;)+1,4))}&#39;</span></code></pre></div>
 
 <p>Which will give you the following output:</p>
 
